@@ -1024,7 +1024,7 @@ function renderAbPanel(){
     const onCD=abCDs[i]>0,canUse=!onCD&&G.mana>=ab.mana&&G.inCombat&&G.enemy;
     const pct=onCD?Math.max(0,(1-abCDs[i]/ab.cd)*100):100;
     return `<div class="ab-btn${onCD?' cooldown':canUse?' ready':''}" onclick="useAbility(${i})" style="display:flex;align-items:center;gap:7px;margin-bottom:4px">
-      <span style="font-size:18px;flex-shrink:0">${ab.icon}</span>
+      <span style="font-size:18px;flex-shrink:0;width:22px;text-align:center;display:inline-block">${ab.icon}</span>
       <div style="flex:1">
         <div style="font-size:10px;font-weight:700;font-family:var(--font-d);color:${onCD?'var(--txt3)':canUse?'var(--txt)':'var(--txt2)'}">${ab.name}</div>
         <div style="font-size:8.5px;color:var(--txt3);margin-bottom:2px">${ab.tip}</div>
@@ -1120,6 +1120,13 @@ function showBanner(t,d){
 // ═══════════════════════════════════════
 function combatTick(){
   if(!G.inCombat||paused||!G.enemy)return;
+
+  // Ability DOTs fire BEFORE tickStatuses so the last round still procs
+  if(enemyStatus.fireball&&G.enemy){const fd=Math.floor((G.enemy.maxHp||G.enemy.hp)*.04);G.enemy.hp-=fd;logMsg('🔥 Fireball burns: '+fd+' dmg','info');updateEnemyBars();if(G.enemy.hp<=0){enemyDied();return;}}
+  if(enemyStatus.hemorrhage&&G.enemy){const hd=Math.floor((G.enemy.maxHp||G.enemy.hp)*.08);G.enemy.hp-=hd;logMsg('🩸 Hemorrhage: '+hd+' dmg','info');updateEnemyBars();if(G.enemy.hp<=0){enemyDied();return;}}
+  if(enemyStatus.poison_arrow&&G.enemy){const pad=Math.floor((G.enemy.maxHp||G.enemy.hp)*.03);G.enemy.hp-=pad;logMsg('☠️ Poison Arrow: '+pad+' dmg','info');updateEnemyBars();if(G.enemy.hp<=0){enemyDied();return;}}
+  if(heroStatus.aura){const ah=Math.floor(G.maxHp*.05);G.hp=Math.min(G.maxHp,G.hp+ah);logMsg('💛 Holy Aura: +'+ah+' HP','good');flashFx('hero-svg-big','heal-flash');}
+
   tickStatuses();
 
   // Treasure
@@ -1189,12 +1196,6 @@ function combatTick(){
     if(_sp==='void'&&G.enemy){const _vd=Math.floor(dmg*.30);G.enemy.hp-=_vd;logMsg('🌀 Void rift: '+_vd,'info');updateEnemyBars();if(G.enemy.hp<=0){enemyDied();return;}}
     if(_sp==='bleed'&&isCrit&&!enemyStatus.bleed){addStatus('enemy','bleed',10,{icon:'🩸',label:'Bleed',cls:'sfx-poison'});logMsg('🩸 Bloodthirst: massive bleed!','crit');}
   }
-
-  // Ability DOTs (percent-HP damage per turn)
-  if(enemyStatus.fireball){const fd=Math.floor(G.enemy.maxHp*.04);G.enemy.hp-=fd;logMsg('🔥 Fireball burns: '+fd+' dmg','info');updateEnemyBars();if(G.enemy.hp<=0){enemyDied();return;}}
-  if(enemyStatus.hemorrhage){const hd=Math.floor(G.enemy.maxHp*.08);G.enemy.hp-=hd;logMsg('🩸 Hemorrhage: '+hd+' dmg','info');updateEnemyBars();if(G.enemy.hp<=0){enemyDied();return;}}
-  if(enemyStatus.poison_arrow){const pad=Math.floor(G.enemy.maxHp*.03);G.enemy.hp-=pad;logMsg('☠️ Poison Arrow: '+pad+' dmg','info');updateEnemyBars();if(G.enemy.hp<=0){enemyDied();return;}}
-  if(heroStatus.aura){const ah=Math.floor(G.maxHp*.05);G.hp=Math.min(G.maxHp,G.hp+ah);logMsg('💛 Holy Aura: +'+ah+' HP','good');flashFx('hero-svg-big','heal-flash');}
 
   // Enemy attacks
   if(shieldHits>0){shieldHits--;logMsg('🛡 Divine Shield absorbs the blow!','good');}

@@ -1366,7 +1366,7 @@ function useAbility(idx=0){
   const ab=CLS[G.cls].abs[idx];
   if(abCDs[idx]>0){push('Ability on cooldown! ('+abCDs[idx]+' turns)');return;}
   if(G.mana<ab.mana){push('Not enough mana! Need '+ab.mana);return;}
-  G.mana-=ab.mana;G.abilityUses++;abCDs[idx]=ab.cd;SFX.ability();
+  G.mana-=ab.mana;G.abilityUses++;abCDs=abCDs.map(()=>ab.cd);SFX.ability();
   const gear=calcGear();
   const str2=G.str+Math.floor(G.level*.5);
   const intB=G.cls==='mage'?Math.floor(G.int*.5):0;

@@ -246,22 +246,38 @@ const CLS={
     prof:'Stealth, Sleight of Hand, Acrobatics',col:'#1e8870',badge:'background:#083028;color:#28b898',
     desc:'Master of shadows and swift strikes. High crit, bleeds enemies before they react.',
     allowedWeapons:['Dagger','Sword'],
-    ab:{name:'Shadowstrike',icon:'🌑',tip:'Triple crit window for 1 hit',mana:25,cd:9,eff:'shadow'}},
+    abs:[
+      {name:'Shadowstrike',icon:'🌑',tip:'Triple crit window for 1 hit',mana:25,cd:9,eff:'shadow'},
+      {name:'Shadow Dance',icon:'💨',tip:'+50% dodge chance for 5 turns',mana:20,cd:8,eff:'dance'},
+      {name:'Hemorrhage',icon:'🩸',tip:'Bleed 8% HP/turn for 6 turns',mana:30,cd:12,eff:'hemorrhage'}
+    ]},
   mage:{n:'Mage',align:'Neutral',str:6,dex:8,int:18,con:8,wis:14,cha:10,hp:60,mana:120,crit:10,dmg:[12,22],ac:10,atk:7,
     prof:'Arcana, History, Investigation',col:'#5245c2',badge:'background:#281e78;color:#8878ee',
     desc:'Weaver of arcane forces. Devastating INT-scaled spell damage, but fragile.',
     allowedWeapons:['Staff'],
-    ab:{name:'Arcane Surge',icon:'⚡',tip:'Deal 3× magic burst instantly',mana:40,cd:11,eff:'surge'}},
+    abs:[
+      {name:'Arcane Surge',icon:'⚡',tip:'Deal 3× magic burst instantly',mana:40,cd:11,eff:'surge'},
+      {name:'Fireball',icon:'🔥',tip:'Burns enemy 4% HP/turn for 5 turns',mana:35,cd:9,eff:'fireball'},
+      {name:'Frost Nova',icon:'❄️',tip:'Stun 2 turns + 40% dmg reduction',mana:45,cd:14,eff:'frost'}
+    ]},
   paladin:{n:'Paladin',align:'Lawful Good',str:14,dex:8,int:10,con:16,wis:12,cha:14,hp:90,mana:80,crit:8,dmg:[10,18],ac:15,atk:4,
     prof:'Athletics, Insight, Persuasion',col:'#b87818',badge:'background:#3e2204;color:#d89428',
     desc:'Divine warrior of sacred steel. Good survivability with passive holy self-healing (nerfed from godlike).',
     allowedWeapons:['Sword'],
-    ab:{name:'Divine Shield',icon:'✨',tip:'Heal 30% HP + block 2 hits',mana:35,cd:13,eff:'shield'}},
+    abs:[
+      {name:'Divine Shield',icon:'✨',tip:'Heal 30% HP + block 2 hits',mana:35,cd:13,eff:'shield'},
+      {name:'Divine Smite',icon:'⚔️',tip:'2.5× damage + stun 2 turns',mana:40,cd:11,eff:'smite'},
+      {name:'Holy Aura',icon:'💛',tip:'Regen 5% HP/turn for 6 turns',mana:30,cd:10,eff:'aura'}
+    ]},
   archer:{n:'Archer',align:'True Neutral',str:10,dex:16,int:10,con:12,wis:12,cha:8,hp:90,mana:70,crit:15,dmg:[9,17],ac:14,atk:5,
     prof:'Perception, Survival, Nature',col:'#1f6830',badge:'background:#122e18;color:#46be6c',
     desc:'Swift hunter. Balanced stats, bonus dodge, poison arrows. Rapid 10-arrow barrage.',
     allowedWeapons:['Bow','Dagger'],
-    ab:{name:'Barrage',icon:'🏹',tip:'Fire 10 rapid arrows instantly',mana:30,cd:10,eff:'barrage'}}
+    abs:[
+      {name:'Barrage',icon:'🏹',tip:'Fire 10 rapid arrows instantly',mana:30,cd:10,eff:'barrage'},
+      {name:'Poison Arrow',icon:'☠️',tip:'Poison 3% HP/turn for 8 turns',mana:25,cd:9,eff:'poison_arrow'},
+      {name:'Eagle Eye',icon:'🦅',tip:'+30% crit chance for 5 turns',mana:20,cd:8,eff:'eagle_eye'}
+    ]}
 };
 
 const DUNGEONS=[
@@ -716,7 +732,7 @@ function enemySVG(name,w,h){
 // ═══════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════
-let G=null,cTimer=null,paused=false,abCD=0,shieldHits=0,shadowReady=false,retryTimer=null;
+let G=null,cTimer=null,paused=false,abCDs=[0,0,0],shieldHits=0,shadowReady=false,retryTimer=null;
 
 // ═══════════════════════════════════════
 // OFFLINE PROGRESS
@@ -762,7 +778,7 @@ function continueGame(){
   // FIX: always reset combat state on load so Enter button works
   clearTimeout(cTimer);cTimer=null;
   G.inCombat=false;G.enemy=null;paused=false;
-  abCD=0;shieldHits=0;shadowReady=false;
+  abCDs=[0,0,0];shieldHits=0;shadowReady=false;
   heroStatus={};enemyStatus={};
   document.getElementById('btn-enter').style.display='block';
   document.getElementById('btn-pause').style.display='none';
@@ -787,9 +803,8 @@ function gotoCharSelect(){
         ${['str','dex','int','con','wis','cha'].map(s=>`<div class="card-inner" style="text-align:center"><div style="color:var(--txt3);font-size:8.5px;font-family:var(--font-d);letter-spacing:.5px">${s.toUpperCase()}</div><div style="color:${c.col};font-weight:700;font-family:var(--font-d);font-size:14px">${c[s]}</div></div>`).join('')}
       </div>
       <div style="padding:8px 10px;background:var(--bg0);border-radius:7px;border:1px solid var(--bord);margin-bottom:8px">
-        <div style="font-size:8.5px;color:var(--txt3);font-family:var(--font-d);letter-spacing:.5px;margin-bottom:3px">CLASS ABILITY</div>
-        <div style="font-size:12px;color:${c.col}">${c.ab.icon} <b>${c.ab.name}</b> — <span style="color:var(--txt2)">${c.ab.tip}</span></div>
-        <div style="font-size:10px;color:var(--txt3);margin-top:2px;font-family:var(--font-m)">✨ ${c.ab.mana} mana · CD: ${c.ab.cd} turns</div>
+        <div style="font-size:8.5px;color:var(--txt3);font-family:var(--font-d);letter-spacing:.5px;margin-bottom:5px">CLASS ABILITIES</div>
+        ${c.abs.map(ab=>`<div style="font-size:11px;color:${c.col};margin-bottom:1px">${ab.icon} <b>${ab.name}</b> — <span style="color:var(--txt2);font-size:10px">${ab.tip}</span></div><div style="font-size:9.5px;color:var(--txt3);margin-bottom:4px;font-family:var(--font-m)">✨ ${ab.mana}mp · CD: ${ab.cd}t</div>`).join('')}
       </div>
       <div style="font-size:10.5px;color:var(--txt3);font-family:var(--font-m)">❤ ${c.hp} HP · ✨ ${c.mana} Mana · 🎯 ${c.crit}% crit</div>`;
     d.onclick=()=>startGame(k);
@@ -810,7 +825,7 @@ function startGame(cls){
     activeDungeon:0,shopItems:[],legendaryFound:false,abilityUses:0,achievements:[],shopRefreshes:0,crits:0,shopBuys:0,
     prestige:0,prestigeBonus:{str:0,dex:0,int:0,con:0,wis:0,cha:0,hp:0,mana:0,crit:0},
     potions:{hp_s:2},potionsUsed:0,enchants:0,dungeonRuns:[0,0,0,0,0,0],autoEquip:false,autoRetry:true,autoSell:false,autoPotion:false};
-  abCD=0;shieldHits=0;shadowReady=false;heroStatus={};enemyStatus={};
+  abCDs=[0,0,0];shieldHits=0;shadowReady=false;heroStatus={};enemyStatus={};
   showScreen('s-game');renderAll();showTab('t-battle','tb-b');refreshShop(false);updateHeroVisuals();
   push('⚔ '+G.charName+' enters Ardenmoor!','info');saveGame();
   // Show tutorial for first time players
@@ -819,7 +834,7 @@ function startGame(cls){
 
 function confirmNewGame(){
   if(!confirm('Start a new game? All progress will be lost.'))return;
-  clearTimeout(cTimer);G=null;paused=false;abCD=0;shieldHits=0;shadowReady=false;heroStatus={};enemyStatus={};
+  clearTimeout(cTimer);G=null;paused=false;abCDs=[0,0,0];shieldHits=0;shadowReady=false;heroStatus={};enemyStatus={};
   localStorage.removeItem(SK);closeSettings();initTitle();showScreen('s-title');
 }
 
@@ -846,7 +861,7 @@ function doPrestige(){
   G.crit=c.crit+pb.crit;G.baseDmg=[...c.dmg];G.baseAC=c.ac;G.atkBonus=c.atk;
   G.equip={head:null,chest:null,hands:null,feet:null,weapon:null,offhand:null,ring:null,neck:null};
   G.bag=[];G.vault=savedVault;G.step=0;G.inCombat=false;G.enemy=null;
-  abCD=0;shieldHits=0;shadowReady=false;heroStatus={};enemyStatus={};
+  abCDs=[0,0,0];shieldHits=0;shadowReady=false;heroStatus={};enemyStatus={};
   document.getElementById('btn-enter').style.display='block';
   document.getElementById('btn-pause').style.display='none';
   document.getElementById('enemy-card').style.display='none';
@@ -990,19 +1005,22 @@ function renderPips(){
 
 function renderAbPanel(){
   const p=document.getElementById('ab-panel');if(!p||!G)return;
-  const ab=CLS[G.cls].ab,onCD=abCD>0,canUse=!onCD&&G.mana>=ab.mana&&G.inCombat&&G.enemy;
-  const pct2=onCD?Math.max(0,(1-abCD/ab.cd)*100):100;
-  p.innerHTML=`<div class="ab-btn${onCD?' cooldown':canUse?' ready':''}" onclick="useAbility()" style="display:flex;align-items:center;gap:9px">
-    <span style="font-size:22px;flex-shrink:0">${ab.icon}</span>
-    <div style="flex:1">
-      <div style="font-size:11px;font-weight:700;font-family:var(--font-d);color:${onCD?'var(--txt3)':canUse?'var(--txt)':'var(--txt2)'}">${ab.name}</div>
-      <div style="font-size:9.5px;color:var(--txt3);margin-bottom:3px">${ab.tip}</div>
-      <div class="bar" style="height:3px"><div class="bar-fill bar-ab-fill" style="width:${pct2}%;transition:width .5s"></div></div>
-    </div>
-    <div style="font-size:10px;color:var(--txt3);font-family:var(--font-m);flex-shrink:0;text-align:right">
-      ${onCD?'⏳'+abCD:'✨'+ab.mana+'mp'}<br><span style="font-size:9px">${canUse?'READY':onCD?'CD':'—'}</span>
-    </div>
-  </div>`;
+  const abs=CLS[G.cls].abs;
+  p.innerHTML=abs.map((ab,i)=>{
+    const onCD=abCDs[i]>0,canUse=!onCD&&G.mana>=ab.mana&&G.inCombat&&G.enemy;
+    const pct=onCD?Math.max(0,(1-abCDs[i]/ab.cd)*100):100;
+    return `<div class="ab-btn${onCD?' cooldown':canUse?' ready':''}" onclick="useAbility(${i})" style="display:flex;align-items:center;gap:7px;margin-bottom:4px">
+      <span style="font-size:18px;flex-shrink:0">${ab.icon}</span>
+      <div style="flex:1">
+        <div style="font-size:10px;font-weight:700;font-family:var(--font-d);color:${onCD?'var(--txt3)':canUse?'var(--txt)':'var(--txt2)'}">${ab.name}</div>
+        <div style="font-size:8.5px;color:var(--txt3);margin-bottom:2px">${ab.tip}</div>
+        <div class="bar" style="height:3px"><div class="bar-fill bar-ab-fill" style="width:${pct}%;transition:width .5s"></div></div>
+      </div>
+      <div style="font-size:9.5px;color:var(--txt3);font-family:var(--font-m);flex-shrink:0;text-align:right">
+        ${onCD?'⏳'+abCDs[i]:'✨'+ab.mana+'mp'}<br><span style="font-size:8.5px">${canUse?'READY':onCD?'CD':'—'}</span>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 // ═══════════════════════════════════════
@@ -1103,7 +1121,7 @@ function combatTick(){
     return;
   }
 
-  if(abCD>0){abCD=Math.max(0,abCD-1);renderAbPanel();}
+  abCDs=abCDs.map(v=>v>0?v-1:0);renderAbPanel();
   if(potCD>0)potCD=Math.max(0,potCD-1);
 
   // Boss phase 2 — triggers earlier each run
@@ -1128,7 +1146,7 @@ function combatTick(){
   // Apply dungeon enemy armor — higher dungeons resist gear from previous tiers
   const eArmor=DUNGEONS[G.activeDungeon].eArmor||0;
   dmg=Math.max(1,dmg-eArmor);
-  const critBonus=heroStatus.crit_up?15:0;
+  const critBonus=(heroStatus.crit_up?15:0)+(heroStatus.eagle_eye?30:0);
   const critPct=(G.crit+gear.crit+critBonus)*(shadowReady?3:1);
   const isCrit=Math.random()*100<critPct;
   if(isCrit){dmg=Math.floor(dmg*2.2);flashFx('hero-svg-big','crit-flash');G.crits=(G.crits||0)+1;SFX.crit();}
@@ -1158,6 +1176,12 @@ function combatTick(){
     if(_sp==='bleed'&&isCrit&&!enemyStatus.bleed){addStatus('enemy','bleed',10,{icon:'🩸',label:'Bleed',cls:'sfx-poison'});logMsg('🩸 Bloodthirst: massive bleed!','crit');}
   }
 
+  // Ability DOTs (percent-HP damage per turn)
+  if(enemyStatus.fireball){const fd=Math.floor(G.enemy.maxHp*.04);G.enemy.hp-=fd;logMsg('🔥 Fireball burns: '+fd+' dmg','info');updateEnemyBars();if(G.enemy.hp<=0){enemyDied();return;}}
+  if(enemyStatus.hemorrhage){const hd=Math.floor(G.enemy.maxHp*.08);G.enemy.hp-=hd;logMsg('🩸 Hemorrhage: '+hd+' dmg','info');updateEnemyBars();if(G.enemy.hp<=0){enemyDied();return;}}
+  if(enemyStatus.poison_arrow){const pad=Math.floor(G.enemy.maxHp*.03);G.enemy.hp-=pad;logMsg('☠️ Poison Arrow: '+pad+' dmg','info');updateEnemyBars();if(G.enemy.hp<=0){enemyDied();return;}}
+  if(heroStatus.aura){const ah=Math.floor(G.maxHp*.05);G.hp=Math.min(G.maxHp,G.hp+ah);logMsg('💛 Holy Aura: +'+ah+' HP','good');flashFx('hero-svg-big','heal-flash');}
+
   // Enemy attacks
   if(shieldHits>0){shieldHits--;logMsg('🛡 Divine Shield absorbs the blow!','good');}
   else if(Object.values(G.equip).some(_s=>_s&&_s.specialty&&_s.specialty.type==='chill')&&Math.random()<.20){
@@ -1166,10 +1190,13 @@ function combatTick(){
     const rawDmg=G.enemy.dmg[0]+Math.floor(Math.random()*(G.enemy.dmg[1]-G.enemy.dmg[0]+1));
     const ac=G.baseAC+gear.ac+Math.floor(G.level*.3);
     const ghostBonus=Object.values(G.equip).some(_s=>_s&&_s.specialty&&_s.specialty.type==='ghost')?25:0;
-    const dodge=(G.cls==='rogue'||G.cls==='archer')?18+Math.floor(G.dex/3)+ghostBonus:5+ghostBonus;
+    const danceBonus=heroStatus.dance?50:0;
+    const dodge=(G.cls==='rogue'||G.cls==='archer')?18+Math.floor(G.dex/3)+ghostBonus+danceBonus:5+ghostBonus+danceBonus;
     if(Math.random()*100<dodge){logMsg('💨 Dodged!','good');}
     else{
       let ad=Math.max(1,rawDmg-Math.floor((ac-10)/2));
+      // Frost Nova shield — 40% damage reduction
+      if(heroStatus.frost_shield){ad=Math.max(1,Math.floor(ad*.6));logMsg('🧊 Frost Shield: damage reduced!','good');}
       // Stun
       if(heroStatus.stun){logMsg('😵 Stunned! Took double damage!','warn');ad*=2;}
       // Enemy poison/burn
@@ -1334,12 +1361,12 @@ function showLvlUpOverlay(lvl){
 // ═══════════════════════════════════════
 // CLASS ABILITY
 // ═══════════════════════════════════════
-function useAbility(){
+function useAbility(idx=0){
   if(!G||!G.inCombat||!G.enemy)return;
-  const ab=CLS[G.cls].ab;
-  if(abCD>0){push('Ability on cooldown! ('+abCD+' turns)');return;}
+  const ab=CLS[G.cls].abs[idx];
+  if(abCDs[idx]>0){push('Ability on cooldown! ('+abCDs[idx]+' turns)');return;}
   if(G.mana<ab.mana){push('Not enough mana! Need '+ab.mana);return;}
-  G.mana-=ab.mana;G.abilityUses++;abCD=ab.cd;SFX.ability();
+  G.mana-=ab.mana;G.abilityUses++;abCDs[idx]=ab.cd;SFX.ability();
   const gear=calcGear();
   const str2=G.str+Math.floor(G.level*.5);
   const intB=G.cls==='mage'?Math.floor(G.int*.5):0;
@@ -1351,16 +1378,44 @@ function useAbility(){
     shadowReady=true;
     logMsg('🌑 Shadowstrike — next hit guaranteed CRIT ×3!','info');
     push('🌑 Shadowstrike: mega-crit ready!');
+  } else if(ab.eff==='dance'){
+    addStatus('hero','dance',5,{icon:'💨',label:'Dance',cls:'sfx-regen'});
+    logMsg('💨 Shadow Dance — +50% dodge for 5 turns!','good');
+    push('💨 Shadow Dance: +50% dodge!');
+  } else if(ab.eff==='hemorrhage'){
+    addStatus('enemy','hemorrhage',6,{icon:'🩸',label:'Hemorrhage',cls:'sfx-poison'});
+    logMsg('🩸 Hemorrhage! Enemy bleeds 8% HP/turn for 6 turns!','crit');
+    push('🩸 Hemorrhage applied!');
   } else if(ab.eff==='surge'){
     const dmg=Math.floor((dMin+Math.random()*(dMax-dMin))*(3.2+Math.random()*.8));
     G.enemy.hp-=dmg;popDmg(dmg,true,true);flashFx('enemy-svg-big','crit-flash');G.crits++;
     logMsg('⚡ Arcane Surge! '+dmg+' arcane damage!','crit');push('⚡ Arcane Surge: '+dmg+' damage!');
     updateEnemyBars();if(G.enemy.hp<=0){enemyDied();return;}
+  } else if(ab.eff==='fireball'){
+    addStatus('enemy','fireball',5,{icon:'🔥',label:'Burn',cls:'sfx-burn'});
+    logMsg('🔥 Fireball! Burns enemy 4% HP/turn for 5 turns!','crit');
+    push('🔥 Fireball: enemy burning!');
+  } else if(ab.eff==='frost'){
+    addStatus('enemy','stun',2,{icon:'❄️',label:'Frozen',cls:'sfx-stun'});
+    addStatus('hero','frost_shield',2,{icon:'🧊',label:'FrostShield',cls:'sfx-shield'});
+    logMsg('❄️ Frost Nova! Enemy frozen 2 turns + 40% dmg reduction!','good');
+    push('❄️ Frost Nova: enemy frozen!');
   } else if(ab.eff==='shield'){
     const h=Math.floor(G.maxHp*.28);G.hp=Math.min(G.maxHp,G.hp+h);shieldHits=2;
     logMsg('✨ Divine Shield! +'+h+' HP + 2-hit immunity!','good');
     push('✨ Divine Shield: +'+h+' HP!');flashFx('hero-svg-big','heal-flash');renderHeroBars();
     addStatus('hero','shield',2,{icon:'🛡',label:'Shield',cls:'sfx-shield'});
+  } else if(ab.eff==='smite'){
+    const sDmg=Math.floor((dMin+Math.random()*(dMax-dMin))*2.5);
+    G.enemy.hp-=sDmg;popDmg(sDmg,true,true);flashFx('enemy-svg-big','crit-flash');G.crits++;
+    addStatus('enemy','stun',2,{icon:'😵',label:'Stunned',cls:'sfx-stun'});
+    logMsg('⚔️ Divine Smite! '+sDmg+' holy damage + 2-turn stun!','crit');
+    push('⚔️ Divine Smite: '+sDmg+' damage!');
+    updateEnemyBars();if(G.enemy.hp<=0){enemyDied();return;}
+  } else if(ab.eff==='aura'){
+    addStatus('hero','aura',6,{icon:'💛',label:'HolyAura',cls:'sfx-regen'});
+    logMsg('💛 Holy Aura! Regen 5% HP/turn for 6 turns!','good');
+    push('💛 Holy Aura: healing over time!');
   } else if(ab.eff==='barrage'){
     let total=0;
     for(let i=0;i<10;i++){
@@ -1370,6 +1425,14 @@ function useAbility(){
     }
     logMsg('🏹 Barrage! 10 arrows for '+total+' total!','crit');push('🏹 Barrage: '+total+' damage!');
     updateEnemyBars();if(G.enemy.hp<=0){clearTimeout(cTimer);setTimeout(()=>enemyDied(),300);return;}
+  } else if(ab.eff==='poison_arrow'){
+    addStatus('enemy','poison_arrow',8,{icon:'☠️',label:'Poison',cls:'sfx-poison'});
+    logMsg('☠️ Poison Arrow! Poisons enemy 3% HP/turn for 8 turns!','crit');
+    push('☠️ Poison Arrow: enemy poisoned!');
+  } else if(ab.eff==='eagle_eye'){
+    addStatus('hero','eagle_eye',5,{icon:'🦅',label:'EagleEye',cls:'sfx-shield'});
+    logMsg('🦅 Eagle Eye! +30% crit for 5 turns!','good');
+    push('🦅 Eagle Eye: precision mode!');
   }
   renderHeroBars();renderAbPanel();
 }
@@ -1817,7 +1880,7 @@ document.addEventListener('keydown',e=>{
   else if(k==='6')showTab('t-shop','tb-sh');
   else if(k==='7')showTab('t-achieve','tb-a');
   else if(k===' '&&G.inCombat){e.preventDefault();togglePause();}
-  else if(k==='q')useAbility();
+  else if(k==='q')useAbility(0);else if(k==='w')useAbility(1);else if(k==='e')useAbility(2);
   else if(k==='s'&&!G.inCombat&&document.getElementById('t-battle').classList.contains('on'))enterDungeon();
 });
 

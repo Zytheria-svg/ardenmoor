@@ -125,6 +125,8 @@ export default function Home() {
     <div id="patch-notes-box" style="display:none;margin-top:10px;padding:12px 14px;background:rgba(20,14,40,.7);border:1px solid var(--gold2);border-radius:10px;text-align:left;max-width:420px;margin-left:auto;margin-right:auto">
       <div style="font-family:var(--font-d);font-size:13px;color:var(--gold2);letter-spacing:.8px;margin-bottom:10px">📋 PATCH NOTES — v12.0</div>
       <div style="font-size:10.5px;color:var(--txt2);font-family:var(--font-m);line-height:1.75;display:flex;flex-direction:column;gap:6px">
+        <div><span style="color:var(--purple3);font-family:var(--font-d)">⚔ MULTI-ABILITY SYSTEM</span><br/>Each class now has 3 unique abilities (Q / W / E). Rogue: Shadowstrike · Shadow Dance (+50% dodge 5t) · Hemorrhage (bleed 8% HP/t). Mage: Arcane Surge · Fireball (burn 4% HP/t) · Frost Nova (freeze + 40% dmg reduction). Paladin: Divine Shield · Divine Smite (2.5× dmg + stun) · Holy Aura (regen 5% HP/t). Archer: Barrage · Poison Arrow (3% HP/t) · Eagle Eye (+30% crit 5t).</div>
+        <div style="height:1px;background:var(--bord3)"></div>
         <div><span style="color:var(--red3);font-family:var(--font-d)">🔧 BUG FIXES</span><br/>Auto-equip now respects class weapon restrictions. Shop-bought items are never auto-sold. Archer Barrage no longer lets dead enemies counterattack. Potion mass-buy now shows total cost.</div>
         <div style="height:1px;background:var(--bord3)"></div>
         <div><span style="color:var(--amber3);font-family:var(--font-d)">🎯 RARITY RENAME</span><br/>Uncommon → Rare · Old Rare → Epic · Old Epic → Legendary · Old Legendary → Mythic. Cleaner tier names across the board.</div>

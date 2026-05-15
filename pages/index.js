@@ -384,17 +384,19 @@ export default function Home() {
 <div id="t-bag" class="tab-c">
 <div class="card">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px">
-    <div style="font-family:var(--font-d);font-size:14px;color:var(--gold2)">🎒 Backpack <span style="font-size:11px;color:var(--txt3);font-weight:400">(<span id="bag-ct">0</span>/24)</span></div>
+    <div style="font-family:var(--font-d);font-size:14px;color:var(--gold2)">🎒 Backpack <span style="font-size:11px;color:var(--txt3);font-weight:400">(<span id="bag-ct">0</span>/100)</span></div>
     <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center">
       <button id="auto-equip-btn" class="btn" style="font-size:10.5px;padding:4px 9px;border-color:var(--bord2)" onclick="toggleAutoEquip()">🔄 Auto-Equip: OFF</button>
       <button id="auto-sell-btn" class="btn" style="font-size:10.5px;padding:4px 9px;border-color:var(--bord2)" onclick="toggleAutoSell()">🗑 Auto-Sell: OFF</button>
+      <button id="bag-selmode-btn" class="btn" style="font-size:10.5px;padding:4px 9px;border-color:var(--bord2)" onclick="toggleBagSelectMode()">🔲 Select</button>
+      <button class="btn" style="font-size:10.5px;padding:4px 9px" onclick="moveBagSelectedToVault()">→ Vault (Sel)</button>
       <button class="btn" style="font-size:10.5px;padding:4px 9px" onclick="bagToVaultAll()">→ Vault All</button>
       <button class="btn btn-gold" style="font-size:10.5px;padding:4px 9px" onclick="bulkSell('bag','common')">Sell Common</button>
       <button class="btn btn-gold" style="font-size:10.5px;padding:4px 9px" onclick="bulkSell('bag','uncommon-')">Sell ≤Rare</button>
       <button class="btn btn-red" style="font-size:10.5px;padding:4px 9px" onclick="bulkSell('bag','all')">Sell All</button>
     </div>
   </div>
-  <div id="bag-grid" style="display:grid;grid-template-columns:repeat(8,46px);gap:4px"></div>
+  <div id="bag-grid" style="display:grid;grid-template-columns:repeat(10,46px);gap:4px"></div>
   <div class="item-panel" style="margin-top:11px;padding-top:10px;border-top:1px solid var(--bord)" id="bag-detail">
     <div style="font-size:12px;color:var(--txt3);font-style:italic">Click an item to inspect.</div>
   </div>
@@ -407,6 +409,8 @@ export default function Home() {
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px">
     <div style="font-family:var(--font-d);font-size:14px;color:var(--gold2)">📦 Vault <span style="font-size:11px;color:var(--txt3);font-weight:400">(<span id="vault-ct">0</span>/80)</span></div>
     <div style="display:flex;gap:5px;flex-wrap:wrap">
+      <button id="vault-selmode-btn" class="btn" style="font-size:10.5px;padding:4px 9px;border-color:var(--bord2)" onclick="toggleVaultSelectMode()">🔲 Select</button>
+      <button class="btn" style="font-size:10.5px;padding:4px 9px" onclick="moveVaultSelectedToBag()">→ Bag (Sel)</button>
       <button class="btn" style="font-size:10.5px;padding:4px 9px" onclick="sortVault()">⇅ Sort</button>
       <button class="btn btn-gold" style="font-size:10.5px;padding:4px 9px" onclick="bulkSell('vault','common')">Sell Common</button>
       <button class="btn btn-gold" style="font-size:10.5px;padding:4px 9px" onclick="bulkSell('vault','uncommon-')">Sell ≤Rare</button>

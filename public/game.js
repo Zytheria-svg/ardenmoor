@@ -74,9 +74,20 @@ function getSB(){
   return _sb;
 }
 
+function getDeviceId(){
+  let id=localStorage.getItem('ardenmoor_uid');
+  if(!id){id='u'+Math.random().toString(36).slice(2,10);localStorage.setItem('ardenmoor_uid',id);}
+  return id;
+}
 function getCloudSlotName(){
+  const uid=getDeviceId();
   const v=(document.getElementById('cloud-slot-id')||{}).value||'';
-  return v.trim().replace(/[^a-zA-Z0-9_\-]/g,'').slice(0,40)||'default';
+  const name=v.trim().replace(/[^a-zA-Z0-9_\-]/g,'').slice(0,32)||'default';
+  return uid+'_'+name;
+}
+function getCloudDisplaySlot(slotName){
+  const uid=getDeviceId();
+  return slotName.startsWith(uid+'_')?slotName.slice(uid.length+1):slotName;
 }
 function getCloudPin(){
   const el=document.getElementById('cloud-pin');
@@ -142,7 +153,8 @@ async function showCloudSlots(){
   if(!sb){el.textContent='⚠️ Supabase not configured.';return;}
   el.textContent='⏳ Loading…';
   try{
-    const{data:slots,error}=await sb.from('cloud_saves').select('slot_name,char_name,level,cls,protected,updated_at').order('updated_at',{ascending:false});
+    const uid=getDeviceId();
+    const{data:slots,error}=await sb.from('cloud_saves').select('slot_name,char_name,level,cls,protected,updated_at').like('slot_name',uid+'_%').order('updated_at',{ascending:false});
     if(error)throw error;
     if(!slots||!slots.length){el.textContent='No cloud saves found.';return;}
     el.innerHTML='';
@@ -150,9 +162,10 @@ async function showCloudSlots(){
       const clsIcon={rogue:'🗡',mage:'🔮',paladin:'🛡',archer:'🏹'}[s.cls]||'⚔';
       const lockIcon=s.protected?'🔒 ':'';
       const when=new Date(s.updated_at).toLocaleDateString();
+      const displayName=getCloudDisplaySlot(s.slot_name);
       const btn=document.createElement('button');
       btn.className='btn btn-gold';btn.style.cssText='font-size:11px;padding:4px 10px;margin:3px';
-      btn.textContent=clsIcon+' '+lockIcon+'Load: '+s.slot_name+' — '+s.char_name+' LV'+s.level+' ('+when+')';
+      btn.textContent=clsIcon+' '+lockIcon+'Load: '+displayName+' — '+s.char_name+' LV'+s.level+' ('+when+')';
       btn.onclick=async()=>{
         let pin=s.protected?await _promptPin(s.slot_name):undefined;
         if(s.protected&&!pin)return;
@@ -733,6 +746,7 @@ function enemySVG(name,w,h){
 // STATE
 // ═══════════════════════════════════════
 let G=null,cTimer=null,paused=false,abCDs=[0,0,0],shieldHits=0,shadowReady=false,retryTimer=null;
+let bagSel=new Set(),vaultSel=new Set(),bagSelectMode=false,vaultSelectMode=false;
 
 // ═══════════════════════════════════════
 // OFFLINE PROGRESS
@@ -1468,18 +1482,18 @@ function lootItem(item){
     const weaponTypes=['Sword','Dagger','Staff','Bow'];
     if(item.slot==='weapon'&&weaponTypes.includes(item.type)){
       const allowed=CLS[G.cls].allowedWeapons||[];
-      if(!allowed.includes(item.type)){if(G.bag.length<24)G.bag.push(item);else if(G.vault.length<80)G.vault.push(item);return;}
+      if(!allowed.includes(item.type)){if(G.bag.length<100)G.bag.push(item);else if(G.vault.length<80)G.vault.push(item);return;}
     }
     if(!cur||itemScore(item)>itemScore(cur)){
       const old=G.equip[item.slot];
       G.equip[item.slot]=item;
-      if(old){if(G.bag.length<24)G.bag.push(old);else if(G.vault.length<80)G.vault.push(old);}
+      if(old){if(G.bag.length<100)G.bag.push(old);else if(G.vault.length<80)G.vault.push(old);}
       logMsg('🔄 Auto-Equipped: '+item.name+' ('+item.slot+')','good');
       push('🔄 Auto-Equipped: '+item.name,'loot');
       renderAll();return;
     }
   }
-  if(G.bag.length<24){G.bag.push(item);logMsg(rarSym(item.rarity)+' Loot: '+item.name);}
+  if(G.bag.length<100){G.bag.push(item);logMsg(rarSym(item.rarity)+' Loot: '+item.name);}
   else if(G.vault.length<80){G.vault.push(item);logMsg(rarSym(item.rarity)+' → Vault: '+item.name);}
   else logMsg('⚠ Bags full! '+item.name+' lost!');
 }
@@ -1564,7 +1578,7 @@ function calcGear(){let dmg=0,ac=0,crit=0,hp=0;Object.values(G.equip).forEach(i=
 // ═══════════════════════════════════════
 function unequip(slot){
   const i=G.equip[slot];if(!i)return;
-  if(G.bag.length<24){G.bag.push(i);G.equip[slot]=null;renderSheet();push('Unequipped: '+i.name);}
+  if(G.bag.length<100){G.bag.push(i);G.equip[slot]=null;renderSheet();push('Unequipped: '+i.name);}
   else push('Bag full!');
 }
 
@@ -1612,21 +1626,66 @@ function renderSheet(){
 // ═══════════════════════════════════════
 // BAG / VAULT
 // ═══════════════════════════════════════
+function toggleBagSelectMode(){
+  bagSelectMode=!bagSelectMode;
+  if(!bagSelectMode)bagSel.clear();
+  renderBag();
+}
+function toggleVaultSelectMode(){
+  vaultSelectMode=!vaultSelectMode;
+  if(!vaultSelectMode)vaultSel.clear();
+  renderVault();
+}
+function moveBagSelectedToVault(){
+  if(!bagSel.size){push('No items selected!');return;}
+  const idxs=[...bagSel].sort((a,b)=>b-a);
+  let moved=0,skipped=0;
+  for(const i of idxs){
+    if(!G.bag[i])continue;
+    if(G.vault.length>=80){skipped++;continue;}
+    G.vault.push(G.bag.splice(i,1)[0]);moved++;
+  }
+  bagSel.clear();bagSelectMode=false;
+  push('Moved '+moved+' items to vault'+(skipped?' ('+skipped+' skipped, vault full)':''),'info');
+  renderBag();renderVault();queueSave();
+}
+function moveVaultSelectedToBag(){
+  if(!vaultSel.size){push('No items selected!');return;}
+  const idxs=[...vaultSel].sort((a,b)=>b-a);
+  let moved=0,skipped=0;
+  for(const i of idxs){
+    if(!G.vault[i])continue;
+    if(G.bag.length>=100){skipped++;continue;}
+    G.bag.push(G.vault.splice(i,1)[0]);moved++;
+  }
+  vaultSel.clear();vaultSelectMode=false;
+  push('Moved '+moved+' items to bag'+(skipped?' ('+skipped+' skipped, bag full)':''),'info');
+  renderBag();renderVault();queueSave();
+}
+
 function renderBag(){
   const gr=document.getElementById('bag-grid');gr.innerHTML='';
   document.getElementById('bag-ct').textContent=G.bag.length;
   const aeBtn=document.getElementById('auto-equip-btn');
   if(aeBtn){aeBtn.textContent='🔄 Auto-Equip: '+(G.autoEquip?'ON':'OFF');aeBtn.style.borderColor=G.autoEquip?'var(--green2)':'var(--bord2)';aeBtn.style.color=G.autoEquip?'var(--green3)':'';}
   const asBtn=document.getElementById('auto-sell-btn');if(asBtn){asBtn.textContent='🗑 Auto-Sell: '+(G.autoSell?'ON':'OFF');asBtn.style.borderColor=G.autoSell?'var(--red2)':'var(--bord2)';asBtn.style.color=G.autoSell?'var(--red3)':'';};
+  const smBtn=document.getElementById('bag-selmode-btn');
+  if(smBtn){smBtn.textContent=bagSelectMode?'✅ Select ('+bagSel.size+')':'🔲 Select';smBtn.style.borderColor=bagSelectMode?'var(--green2)':'var(--bord2)';smBtn.style.color=bagSelectMode?'var(--green3)':'';}
 
-  for(let i=0;i<24;i++){
+  for(let i=0;i<100;i++){
     const item=G.bag[i];const s=document.createElement('div');
     s.className='inv-slot'+(item?' filled rc-'+item.rarity:'');
     if(item){
       s.innerHTML=ISVG[item.type]||'';
       if(item.enchantLevel)s.innerHTML+=`<span class="qty-badge">+${item.enchantLevel}</span>`;
       if(item.specialty)s.innerHTML+=`<span class="qty-badge" style="color:var(--amber3);font-size:9px">${item.specialty.icon}</span>`;
-      s.onclick=()=>showItemDetail('bag',i);s.title=item.name+' ['+item.rarity+']'+(item.specialty?' ✦ '+item.specialty.label:'');
+      if(bagSelectMode){
+        if(bagSel.has(i))s.style.outline='2px solid var(--green2)';
+        s.onclick=(()=>{const idx=i;return()=>{if(bagSel.has(idx))bagSel.delete(idx);else bagSel.add(idx);renderBag();};})();
+      } else {
+        s.onclick=()=>showItemDetail('bag',i);
+        s.title=item.name+' ['+item.rarity+']'+(item.specialty?' ✦ '+item.specialty.label:'');
+      }
     }
     gr.appendChild(s);
   }
@@ -1634,6 +1693,8 @@ function renderBag(){
 function renderVault(){
   const gr=document.getElementById('vault-grid');gr.innerHTML='';
   document.getElementById('vault-ct').textContent=G.vault.length;
+  const smBtn=document.getElementById('vault-selmode-btn');
+  if(smBtn){smBtn.textContent=vaultSelectMode?'✅ Select ('+vaultSel.size+')':'🔲 Select';smBtn.style.borderColor=vaultSelectMode?'var(--green2)':'var(--bord2)';smBtn.style.color=vaultSelectMode?'var(--green3)':'';}
   for(let i=0;i<80;i++){
     const item=G.vault[i];const s=document.createElement('div');
     s.className='inv-slot'+(item?' filled rc-'+item.rarity:'');
@@ -1641,7 +1702,13 @@ function renderVault(){
       s.innerHTML=ISVG[item.type]||'';
       if(item.enchantLevel)s.innerHTML+=`<span class="qty-badge">+${item.enchantLevel}</span>`;
       if(item.isBossDrop)s.innerHTML+=`<span class="qty-badge" style="color:var(--gold3)">★</span>`;
-      s.onclick=()=>showItemDetail('vault',i);s.title=item.name+' ['+item.rarity+']';
+      if(vaultSelectMode){
+        if(vaultSel.has(i))s.style.outline='2px solid var(--green2)';
+        s.onclick=(()=>{const idx=i;return()=>{if(vaultSel.has(idx))vaultSel.delete(idx);else vaultSel.add(idx);renderVault();};})();
+      } else {
+        s.onclick=()=>showItemDetail('vault',i);
+        s.title=item.name+' ['+item.rarity+']';
+      }
     }
     gr.appendChild(s);
   }
@@ -1696,10 +1763,10 @@ function equipFromBag(idx){
   G.equip[item.slot]=item;G.bag.splice(idx,1);if(old)G.bag.push(old);
   push('Equipped: '+item.name);renderBag();renderSheet();document.getElementById('bag-detail').innerHTML='<div style="font-size:11px;color:var(--txt3);font-style:italic">Equipped.</div>';
 }
-function bagToVault(idx){if(G.vault.length>=80){push('Vault full!');return;}G.vault.push(G.bag.splice(idx,1)[0]);renderBag();document.getElementById('bag-detail').innerHTML='<div style="font-size:11px;color:var(--txt3);font-style:italic">Moved to vault.</div>';}
-function sellBag(idx){const i=G.bag[idx];if(!i)return;G.gold+=i.value;G.totalGold+=i.value;G.bag.splice(idx,1);push('Sold for '+i.value+'gp');renderBag();renderAll();document.getElementById('bag-detail').innerHTML='<div style="font-size:11px;color:var(--txt3);font-style:italic">Sold.</div>';queueSave();}
-function bagToVaultAll(){let n=0;while(G.bag.length&&G.vault.length<80){G.vault.push(G.bag.shift());n++;}push('Moved '+n+' items to vault');renderBag();}
-function vaultToBag(idx){if(G.bag.length>=24){push('Bag full!');return;}G.bag.push(G.vault.splice(idx,1)[0]);renderVault();document.getElementById('vault-detail').innerHTML='<div style="font-size:11px;color:var(--txt3);font-style:italic">Moved to bag.</div>';}
+function bagToVault(idx){if(G.vault.length>=80){push('Vault full!');return;}G.vault.push(G.bag.splice(idx,1)[0]);bagSel.delete(idx);renderBag();document.getElementById('bag-detail').innerHTML='<div style="font-size:11px;color:var(--txt3);font-style:italic">Moved to vault.</div>';}
+function sellBag(idx){const i=G.bag[idx];if(!i)return;G.gold+=i.value;G.totalGold+=i.value;G.bag.splice(idx,1);bagSel.delete(idx);push('Sold for '+i.value+'gp');renderBag();renderAll();document.getElementById('bag-detail').innerHTML='<div style="font-size:11px;color:var(--txt3);font-style:italic">Sold.</div>';queueSave();}
+function bagToVaultAll(){let n=0;while(G.bag.length&&G.vault.length<80){G.vault.push(G.bag.shift());n++;}bagSel.clear();push('Moved '+n+' items to vault');renderBag();}
+function vaultToBag(idx){if(G.bag.length>=100){push('Bag full!');return;}G.bag.push(G.vault.splice(idx,1)[0]);renderVault();document.getElementById('vault-detail').innerHTML='<div style="font-size:11px;color:var(--txt3);font-style:italic">Moved to bag.</div>';}
 function sellVault(idx){const i=G.vault[idx];if(!i)return;G.gold+=i.value;G.totalGold+=i.value;G.vault.splice(idx,1);push('Sold for '+i.value+'gp');renderVault();renderAll();document.getElementById('vault-detail').innerHTML='<div style="font-size:11px;color:var(--txt3);font-style:italic">Sold.</div>';queueSave();}
 function sortVault(){const o={legendary:0,epic:1,rare:2,uncommon:3,common:4};G.vault.sort((a,b)=>o[a.rarity]-o[b.rarity]);renderVault();}
 
@@ -1761,7 +1828,7 @@ function renderShop(){
 function buyItem(idx){
   const item=G.shopItems[idx];
   if(G.gold<item.price){push('Not enough gold!');return;}
-  if(G.bag.length>=24&&G.vault.length>=80){push('No space in bag or vault!');return;}
+  if(G.bag.length>=100&&G.vault.length>=80){push('No space in bag or vault!');return;}
   G.gold-=item.price;G.shopItems.splice(idx,1);G.shopBuys=(G.shopBuys||0)+1;
   item.fromShop=true;
   lootItem(item);push('Purchased: '+item.name);SFX.buy();renderShop();renderAll();queueSave();

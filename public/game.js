@@ -42,7 +42,7 @@ let gameSpeed=1;
 let potCD=0;
 function setSpeed(s){
   gameSpeed=s;
-  ['1','2','3'].forEach(n=>{
+  ['1','2','3','5'].forEach(n=>{
     const b1=document.getElementById('spd-'+n),b2=document.getElementById('spd-t'+n);
     if(b1)b1.className='speed-btn'+(n==s?' active':'');
     if(b2)b2.className='speed-btn'+(n==s?' active':'');
@@ -184,7 +184,7 @@ async function showCloudSlots(){
 // ═══════════════════════════════════════
 // SETTINGS
 // ═══════════════════════════════════════
-function openSettings(){document.getElementById('settings-panel').classList.add('open');syncThemeBtn();}
+function openSettings(){document.getElementById('settings-panel').classList.add('open');syncThemeBtn();showCloudSlots();}
 function togglePatchNotes(){const b=document.getElementById('patch-notes-box');if(b){const shown=b.style.display!=='none';b.style.display=shown?'none':'block';if(!shown)b.scrollIntoView({behavior:'smooth',block:'center'});}}
 function closeSettings(){document.getElementById('settings-panel').classList.remove('open');}
 
@@ -259,9 +259,9 @@ const CLS={
     ab:{name:'Divine Shield',icon:'✨',tip:'Heal 30% HP + block 2 hits',mana:35,cd:13,eff:'shield'}},
   archer:{n:'Archer',align:'True Neutral',str:10,dex:16,int:10,con:12,wis:12,cha:8,hp:90,mana:70,crit:15,dmg:[9,17],ac:14,atk:5,
     prof:'Perception, Survival, Nature',col:'#1f6830',badge:'background:#122e18;color:#46be6c',
-    desc:'Swift hunter. Balanced stats, bonus dodge, poison arrows. Rapid 5-arrow barrage.',
+    desc:'Swift hunter. Balanced stats, bonus dodge, poison arrows. Rapid 10-arrow barrage.',
     allowedWeapons:['Bow','Dagger'],
-    ab:{name:'Barrage',icon:'🏹',tip:'Fire 5 rapid arrows instantly',mana:30,cd:10,eff:'barrage'}}
+    ab:{name:'Barrage',icon:'🏹',tip:'Fire 10 rapid arrows instantly',mana:30,cd:10,eff:'barrage'}}
 };
 
 const DUNGEONS=[
@@ -342,9 +342,9 @@ function renderShopPotions(){
       <div style="font-size:9px;color:var(--txt3);font-style:italic">${p.desc}</div>
       <div style="font-size:9px;color:var(--txt3);font-family:var(--font-m)">Owned: ${ct} · ${p.price}gp each</div></div>
       <div style="display:flex;flex-direction:column;gap:3px;flex-shrink:0">
-        <button class="btn btn-gold" style="font-size:9.5px;padding:2px 7px" onclick="buyPotion('${k}',1)" ${!ok1?'disabled':''}>×1</button>
-        <button class="btn btn-gold" style="font-size:9.5px;padding:2px 7px" onclick="buyPotion('${k}',5)" ${!ok5?'disabled':''}>×5</button>
-        <button class="btn btn-gold" style="font-size:9.5px;padding:2px 7px" onclick="buyPotion('${k}',10)" ${!ok10?'disabled':''}>×10</button>
+        <button class="btn btn-gold" style="font-size:9.5px;padding:2px 7px" onclick="buyPotion('${k}',1)" ${!ok1?'disabled':''}>×1 (${p.price}g)</button>
+        <button class="btn btn-gold" style="font-size:9.5px;padding:2px 7px" onclick="buyPotion('${k}',5)" ${!ok5?'disabled':''}>×5 (${p.price*5}g)</button>
+        <button class="btn btn-gold" style="font-size:9.5px;padding:2px 7px" onclick="buyPotion('${k}',10)" ${!ok10?'disabled':''}>×10 (${p.price*10}g)</button>
       </div>`;
     div.appendChild(d);
   });
@@ -418,8 +418,8 @@ const ACHIEVEMENTS=[
 const ITEM_TYPES=['Sword','Dagger','Staff','Bow','Shield','Helmet','Chestplate','Gauntlets','Boots','Ring','Amulet','Cloak'];
 const PREFIXES=['Iron','Steel','Mithril','Adamantine','Shadow','Blessed','Cursed','Ancient','Void','Celestial','Dragon','Runic','Elven','Dwarven','Obsidian','Forsaken','Radiant','Infernal','Phantom','Gilded','Bone','Storm','Venom','Sacred','Glacial','Ashen','Blood','Thornwood','Spectral','Soulbound','Silver','Midnight','Ember','Crystal','Wyrmscale','Shadowforged','Ironblood','Deathly','Warlord\'s','Moonlit'];
 const SUFFIXES=['of Power','of Swiftness','of the Void','of Flames','of Frost','of Fortune','of the Wraith','of Legends','of Eternity','of the Fallen','of Ruin','of Dominion','of the Abyss','of Twilight','of the Hunt','of Vengeance','of the Deep','of Starfall','of Corruption','of the Ancients','of Endurance','of the Damned','of Echoes','of the Rift','of Bloodshed',''];
-const RARITY_M={common:1,uncommon:1.5,rare:2.2,epic:3.5,legendary:6};
-const RARITY_C={common:'#484a62',uncommon:'#146050',rare:'#3870c4',epic:'#8878ee',legendary:'#e4b440'};
+const RARITY_M={common:1,rare:1.5,epic:2.2,legendary:3.5,mythic:6};
+const RARITY_C={common:'#484a62',rare:'#146050',epic:'#3870c4',legendary:'#8878ee',mythic:'#e4b440'};
 const ISVG={
   Sword:`<svg viewBox="0 0 28 28"><polygon points="14,2 12,5 16,5" fill="#d8d8d8"/><rect x="12.5" y="4" width="3" height="16" rx="1" fill="#b0b0b0"/><line x1="13.2" y1="5" x2="13.2" y2="19" stroke="#e8e8e8" stroke-width=".8"/><rect x="7" y="19" width="14" height="2.5" rx="1" fill="#8b6914"/><rect x="12" y="21.5" width="4" height="5" rx="1.5" fill="#6b4a0a"/><circle cx="15" cy="7" r=".8" fill="#fff" opacity=".5"/></svg>`,
   Dagger:`<svg viewBox="0 0 28 28"><polygon points="14,3 11.5,15 16.5,15" fill="#b0b8d0"/><polygon points="14,3 13,10 15,10" fill="#d8e0f0"/><rect x="9" y="15" width="10" height="2" rx=".8" fill="#2044b0"/><rect x="12" y="17" width="4" height="8" rx="1.5" fill="#102060"/><line x1="14" y1="5" x2="14" y2="14" stroke="#e0e8f8" stroke-width=".7"/></svg>`,
@@ -756,8 +756,9 @@ if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded'
 
 function continueGame(){
   const s=loadGame();if(!s||!s.G){push('No save found!');return;}
-  G=Object.assign({legendaryFound:false,abilityUses:0,achievements:[],shopRefreshes:0,crits:0,shopBuys:0,prestige:0,potions:{},potionsUsed:0,enchants:0,statusTickMult:1,autoRetry:true,autoSell:false},s.G);
+  G=Object.assign({legendaryFound:false,abilityUses:0,achievements:[],shopRefreshes:0,crits:0,shopBuys:0,prestige:0,potions:{},potionsUsed:0,enchants:0,statusTickMult:1,autoRetry:true,autoSell:false,autoPotion:false},s.G);
   if(typeof G.autoSell!=='boolean')G.autoSell=false;
+  if(typeof G.autoPotion!=='boolean')G.autoPotion=false;
   // FIX: always reset combat state on load so Enter button works
   clearTimeout(cTimer);cTimer=null;
   G.inCombat=false;G.enemy=null;paused=false;
@@ -808,7 +809,7 @@ function startGame(cls){
     bag:[],vault:[],inCombat:false,enemy:null,step:0,clears:0,bosses:0,totalGold:80,killed:0,
     activeDungeon:0,shopItems:[],legendaryFound:false,abilityUses:0,achievements:[],shopRefreshes:0,crits:0,shopBuys:0,
     prestige:0,prestigeBonus:{str:0,dex:0,int:0,con:0,wis:0,cha:0,hp:0,mana:0,crit:0},
-    potions:{hp_s:2},potionsUsed:0,enchants:0,dungeonRuns:[0,0,0,0,0,0],autoEquip:false,autoRetry:true,autoSell:false};
+    potions:{hp_s:2},potionsUsed:0,enchants:0,dungeonRuns:[0,0,0,0,0,0],autoEquip:false,autoRetry:true,autoSell:false,autoPotion:false};
   abCD=0;shieldHits=0;shadowReady=false;heroStatus={};enemyStatus={};
   showScreen('s-game');renderAll();showTab('t-battle','tb-b');refreshShop(false);updateHeroVisuals();
   push('⚔ '+G.charName+' enters Ardenmoor!','info');saveGame();
@@ -1039,12 +1040,12 @@ function spawnNext(){
   } else if(isBoss){
     const runs=(G.dungeonRuns||[])[G.activeDungeon]||0;
     // EXPONENTIAL boss scaling — compound growth per run: D0=30% D1=38% D2=48% D3=58% D4=70% D5=85% per run
-    const bossRunRate=[0.30,0.38,0.48,0.58,0.70,0.85][G.activeDungeon]||0.30;
+    const bossRunRate=[0.08,0.10,0.13,0.16,0.20,0.25][G.activeDungeon]||0.08;
     const rewardRate=[0.08,0.10,0.13,0.16,0.20,0.25][G.activeDungeon]||0.08;
-    const cappedRuns=Math.min(runs,30);
+    const cappedRuns=Math.min(runs,20);
     const runBonus=cappedRuns>0?Math.pow(1+bossRunRate,cappedRuns):1;
     const rewardBonus=1+runs*rewardRate;
-    const hp=d.boss.hp*(1+G.level*.10)*runBonus;
+    const hp=d.boss.hp*(1+G.level*.05)*runBonus;
     const bDmg=d.boss.dmg.map(v=>Math.floor(v*runBonus));
     // Phase 2 triggers earlier each run: run0=50%, run1=57%, run2=64%... cap 82%
     const phase2Threshold=Math.min(0.50+runs*0.07,0.82);
@@ -1058,7 +1059,7 @@ function spawnNext(){
   } else {
     const runs=(G.dungeonRuns||[])[G.activeDungeon]||0;
     // Enemy scaling stacks per dungeon tier: D0=+15% D1=+20% D2=+27% D3=+35% D4=+44% D5=+55% per run
-    const enemyRunRate=[0.15,0.20,0.27,0.35,0.44,0.55][G.activeDungeon]||0.15;
+    const enemyRunRate=[0.05,0.07,0.09,0.11,0.14,0.18][G.activeDungeon]||0.05;
     const rewardRate=[0.08,0.10,0.13,0.16,0.20,0.25][G.activeDungeon]||0.08;
     const runBonus=1+runs*enemyRunRate;
     const rewardBonus=1+runs*rewardRate;
@@ -1092,7 +1093,7 @@ function combatTick(){
   // Treasure
   if(G.enemy.isTreasure){
     const drops=1+Math.floor(Math.random()*2);
-    for(let i=0;i<drops;i++)lootItem(genItem(G.activeDungeon,G.level,'uncommon'));
+    for(let i=0;i<drops;i++)lootItem(genItem(G.activeDungeon,G.level,'rare'));
     G.gold+=G.enemy.g;G.totalGold+=G.enemy.g;
     logMsg('💰 Looted! +'+G.enemy.g+'gp, '+drops+' items!','good');
     popGold(G.enemy.g);SFX.loot();
@@ -1209,6 +1210,11 @@ function combatTick(){
     logMsg('☠ Poison: '+pDmg+' dmg','info');updateEnemyBars();if(G.enemy.hp<=0){enemyDied();return;}
   }
 
+  // Auto-potion: use best available potion when HP drops below 35%
+  if(G.autoPotion&&potCD<=0&&G.hp/G.maxHp<0.35){
+    if((G.potions?.hp_l||0)>0)usePotion('hp_l');
+    else if((G.potions?.hp_s||0)>0)usePotion('hp_s');
+  }
   renderHeroBars();
   if(G.hp<=0){heroDied();return;}
   if(!paused)cTimer=setTimeout(combatTick,tickDelay());
@@ -1216,7 +1222,7 @@ function combatTick(){
 
 function enemyDied(){
   const d=DUNGEONS[G.activeDungeon];
-  const xpG=Math.floor(G.enemy.xp*d.xm);
+  const xpG=Math.floor(G.enemy.xp*d.xm*1.5);
   G.xp+=xpG;G.gold+=G.enemy.g;G.totalGold+=G.enemy.g;G.killed++;
   const isBoss=G.enemy.isBoss;
   if(isBoss){
@@ -1237,8 +1243,8 @@ function enemyDied(){
   popGold(G.enemy.g);
   // Specialty: Divine Ward heals 5% maxHP on every kill
   if(Object.values(G.equip).some(_s=>_s&&_s.specialty&&_s.specialty.type==='holy')){const _hh=Math.floor(G.maxHp*.05);G.hp=Math.min(G.maxHp,G.hp+_hh);if(_hh>0)logMsg('✨ Divine Ward: +'+_hh+'HP on kill','good');}
-  const dropRate=isBoss?.75:G.enemy.isElite?.20:.05+G.level*.001;
-  if(Math.random()<dropRate){const item=genItem(G.activeDungeon,G.level,isBoss?'rare':undefined);lootItem(item);if(item.rarity==='legendary'){G.legendaryFound=true;SFX.legendary();push('🟡 LEGENDARY LOOT: '+item.name,'loot');}}
+  const dropRate=isBoss?.85:G.enemy.isElite?.28:.08+G.level*.001;
+  if(Math.random()<dropRate){const item=genItem(G.activeDungeon,G.level,isBoss?'epic':undefined);lootItem(item);if(item.rarity==='mythic'){G.legendaryFound=true;SFX.legendary();push('🟡 MYTHIC LOOT: '+item.name,'loot');}}
   // Boss unique loot
   if(isBoss){const uItem=genBossItem(G.activeDungeon,G.level);lootItem(uItem);SFX.legendary();push('👑 Unique Boss Drop: '+uItem.name,'loot');}
   while(G.xp>=G.xpNext)levelUp();
@@ -1288,6 +1294,13 @@ function heroDied(){
   queueSave();
 }
 
+function toggleAutoPotion(){
+  if(!G)return;
+  G.autoPotion=!G.autoPotion;
+  const btn=document.getElementById('auto-potion-btn');
+  if(btn){btn.textContent='💊 Auto-Potion: '+(G.autoPotion?'ON':'OFF');btn.style.borderColor=G.autoPotion?'var(--green2)':'var(--bord2)';btn.style.color=G.autoPotion?'var(--green3)':'';}
+  push('Auto-Potion '+(G.autoPotion?'ON — uses best potion at <35% HP':'OFF'),'info');queueSave();
+}
 function toggleAutoRetry(){
   if(!G)return;
   G.autoRetry=!G.autoRetry;
@@ -1297,7 +1310,7 @@ function toggleAutoRetry(){
 }
 
 function levelUp(){
-  G.xp-=G.xpNext;G.level++;G.xpNext=Math.floor(100*Math.pow(1.38,G.level-1));
+  G.xp-=G.xpNext;G.level++;G.xpNext=Math.floor(100*Math.pow(1.22,G.level-1));
   const _hpCap={rogue:12,mage:10,paladin:18,archer:13}[G.cls]||12;
   const hg=Math.min(_hpCap,Math.floor(7+G.con*.45+Math.random()*4+1));
   const mg=Math.floor(5+G.wis*.4+Math.random()*4);
@@ -1350,13 +1363,13 @@ function useAbility(){
     addStatus('hero','shield',2,{icon:'🛡',label:'Shield',cls:'sfx-shield'});
   } else if(ab.eff==='barrage'){
     let total=0;
-    for(let i=0;i<5;i++){
+    for(let i=0;i<10;i++){
       const adm=Math.floor(dMin*.7+Math.random()*(dMax*.7-dMin*.7));
       G.enemy.hp-=adm;total+=adm;
-      setTimeout(()=>popDmg(adm,false,true),i*110);
+      setTimeout(()=>popDmg(adm,false,true),i*80);
     }
-    logMsg('🏹 Barrage! 5 arrows for '+total+' total!','crit');push('🏹 Barrage: '+total+' damage!');
-    updateEnemyBars();if(G.enemy.hp<=0){setTimeout(()=>enemyDied(),550);return;}
+    logMsg('🏹 Barrage! 10 arrows for '+total+' total!','crit');push('🏹 Barrage: '+total+' damage!');
+    updateEnemyBars();if(G.enemy.hp<=0){clearTimeout(cTimer);setTimeout(()=>enemyDied(),300);return;}
   }
   renderHeroBars();renderAbPanel();
 }
@@ -1376,18 +1389,24 @@ function toggleAutoSell(){
   G.autoSell=!G.autoSell;
   const btn=document.getElementById('auto-sell-btn');
   if(btn){btn.textContent='🗑 Auto-Sell: '+(G.autoSell?'ON':'OFF');btn.style.borderColor=G.autoSell?'var(--red2)':'var(--bord2)';btn.style.color=G.autoSell?'var(--red3)':'';}
-  push('Auto-Sell '+(G.autoSell?'ON — Common/Uncommon/Rare sold on pickup (boss drops & specialties exempt)':'OFF'),'info');queueSave();
+  push('Auto-Sell '+(G.autoSell?'ON — Common/Rare/Epic sold on pickup (boss drops & specialties exempt)':'OFF'),'info');queueSave();
 }
 function lootItem(item){
-  // Auto-sell: instantly sell Common/Uncommon/Rare on pickup (never boss drops or specialty items)
-  const _sellRars=['common','uncommon','rare'];
-  if(G.autoSell&&_sellRars.includes(item.rarity)&&!item.isBossDrop&&!item.specialty){
+  // Auto-sell: skip shop-bought items, boss drops, and specialty items
+  const _sellRars=['common','rare','epic'];
+  if(G.autoSell&&_sellRars.includes(item.rarity)&&!item.isBossDrop&&!item.specialty&&!item.fromShop){
     G.gold+=item.value;G.totalGold+=item.value;
     logMsg('💰 Auto-sold '+rarSym(item.rarity)+' '+item.name+' +'+item.value+'gp','good');
     renderAll();queueSave();return;
   }
   if(G.autoEquip&&item.slot){
     const cur=G.equip[item.slot];
+    // Respect weapon class restrictions for auto-equip
+    const weaponTypes=['Sword','Dagger','Staff','Bow'];
+    if(item.slot==='weapon'&&weaponTypes.includes(item.type)){
+      const allowed=CLS[G.cls].allowedWeapons||[];
+      if(!allowed.includes(item.type)){if(G.bag.length<24)G.bag.push(item);else if(G.vault.length<80)G.vault.push(item);return;}
+    }
     if(!cur||itemScore(item)>itemScore(cur)){
       const old=G.equip[item.slot];
       G.equip[item.slot]=item;
@@ -1401,7 +1420,7 @@ function lootItem(item){
   else if(G.vault.length<80){G.vault.push(item);logMsg(rarSym(item.rarity)+' → Vault: '+item.name);}
   else logMsg('⚠ Bags full! '+item.name+' lost!');
 }
-function rarSym(r){return{common:'◻',uncommon:'🟢',rare:'🔵',epic:'🟣',legendary:'🟡'}[r]||'◻';}
+function rarSym(r){return{common:'◻',rare:'🟢',epic:'🔵',legendary:'🟣',mythic:'🟡'}[r]||'◻';}
 
 // ── Specialty items: keyword-named items with unique combat effects ──
 const SPECIALTY_POOL=[
@@ -1416,12 +1435,22 @@ const SPECIALTY_POOL=[
   {n:'Stormweaver Bow',type:'Bow',specialty:{type:'storm',icon:'🌩️',label:'Stormweaver',desc:'Chain lightning hits for +15% extra damage'}},
   {n:'Voidstone Amulet',type:'Amulet',specialty:{type:'void',icon:'🌀',label:'Void Rift',desc:'Each hit tears a void rift for +30% bonus damage'}},
 ];
+const GEAR_BONUS_TYPES=['dmgrdc','atckspd','dgch','hlthrgn','crdmg','ch'];
+const GEAR_BONUS_LABELS={dmgrdc:'%DmgRdc',atckspd:'%AtkSpd',dgch:'%DgCh',hlthrgn:'%HlthRgn',crdmg:'%CrDmg',ch:'%Chaos'};
+function rollGearBonus(rar){
+  const maxByRar={common:1,rare:2,epic:3,legendary:4,mythic:4};
+  const max=maxByRar[rar]||1;
+  const type=GEAR_BONUS_TYPES[Math.floor(Math.random()*GEAR_BONUS_TYPES.length)];
+  const val=Math.ceil(Math.random()*max);
+  return{type,val,label:GEAR_BONUS_LABELS[type]};
+}
 function genItem(dIdx,lvl,minRar){
-  // 3% chance: generate a specialty item (not when minRar is forced)
-  if(Math.random()<.03&&!minRar){
+  // 4% chance: generate a specialty item (not when minRar is forced)
+  if(Math.random()<.04&&!minRar){
     const sp=SPECIALTY_POOL[Math.floor(Math.random()*SPECIALTY_POOL.length)];
-    const dungeonMult=1+dIdx*0.42;const rm=RARITY_M.rare;const b=lvl*rm*dungeonMult;
-    return{name:sp.n,type:sp.type,rarity:'rare',slot:typeSlot(sp.type),enchantLevel:0,dungeonTier:dIdx,specialty:sp.specialty,
+    const dungeonMult=1+dIdx*0.42;const rm=RARITY_M.epic;const b=lvl*rm*dungeonMult;
+    return{name:sp.n,type:sp.type,rarity:'epic',slot:typeSlot(sp.type),enchantLevel:0,dungeonTier:dIdx,specialty:sp.specialty,
+      bonus:rollGearBonus('epic'),
       stats:{dmg:Math.floor(b*.7+Math.random()*b*.4),ac:Math.floor(b*.4+Math.random()*b*.3),crit:Math.floor(Math.random()*4.5*rm),hp:Math.floor(b*1.9+Math.random()*b)},
       value:Math.floor(b*4)};
   }
@@ -1430,15 +1459,15 @@ function genItem(dIdx,lvl,minRar){
   const suf=SUFFIXES[Math.floor(Math.random()*SUFFIXES.length)];
   const roll=Math.random();
   let rar;
-  if(roll<.50)rar='common';else if(roll<.72)rar='uncommon';else if(roll<.88)rar='rare';else if(roll<.96)rar='epic';else rar='legendary';
-  if(minRar==='uncommon'&&rar==='common')rar='uncommon';
-  if(minRar==='rare'&&(rar==='common'||rar==='uncommon'))rar='rare';
+  if(roll<.48)rar='common';else if(roll<.70)rar='rare';else if(roll<.86)rar='epic';else if(roll<.95)rar='legendary';else rar='mythic';
+  if(minRar==='rare'&&rar==='common')rar='rare';
+  if(minRar==='epic'&&(rar==='common'||rar==='rare'))rar='epic';
   const rm=RARITY_M[rar];
-  // Items from deeper dungeons are inherently stronger — D5 items are 3x stronger than D0 at same level
+  // Items from deeper dungeons are inherently stronger
   const dungeonMult=1+dIdx*0.42;
   const b=lvl*rm*dungeonMult;
   const name=suf?pre+' '+t+' '+suf:pre+' '+t;
-  return{name,type:t,rarity:rar,slot:typeSlot(t),enchantLevel:0,dungeonTier:dIdx,
+  return{name,type:t,rarity:rar,slot:typeSlot(t),enchantLevel:0,dungeonTier:dIdx,bonus:rollGearBonus(rar),
     stats:{dmg:Math.floor(b*.7+Math.random()*b*.4),ac:Math.floor(b*.4+Math.random()*b*.3),crit:Math.floor(Math.random()*4.5*rm),hp:Math.floor(b*1.9+Math.random()*b)},
     value:Math.floor(b*2.6)};
 }
@@ -1450,18 +1479,18 @@ function genBossItem(dIdx,lvl){
   const armorPool=['Chestplate','Helmet','Ring','Amulet','Boots','Gauntlets'];
   const t=Math.random()<.6?weaponPool[0]:armorPool[Math.floor(Math.random()*armorPool.length)];
   const dungeonMult=1+dIdx*0.42;
-  // Boss drops: 55% legendary (unique name), 28% epic, 17% rare
+  // Boss drops: 55% mythic (unique name), 28% legendary, 17% epic
   const rarRoll=Math.random();
-  const dropRar=rarRoll<.55?'legendary':rarRoll<.83?'epic':'rare';
-  const isLeg=dropRar==='legendary';
+  const dropRar=rarRoll<.55?'mythic':rarRoll<.83?'legendary':'epic';
+  const isMyth=dropRar==='mythic';
   const rm=RARITY_M[dropRar];
   const b=lvl*rm*dungeonMult;
   const pre=PREFIXES[Math.floor(Math.random()*PREFIXES.length)];
   const suf=SUFFIXES[Math.floor(Math.random()*SUFFIXES.length)];
-  const name=isLeg?d.boss.loot:(pre+' '+t+(suf?' '+suf:''));
-  return{name,type:t,rarity:dropRar,slot:typeSlot(t),enchantLevel:0,isBossDrop:true,dungeonTier:dIdx,
-    stats:{dmg:Math.floor(b*(isLeg?1.2:.85)),ac:Math.floor(b*(isLeg?.8:.55)),crit:Math.floor((isLeg?4:2)+Math.random()*(isLeg?6:4)),hp:Math.floor(b*(isLeg?2.5:1.7))},
-    value:Math.floor(b*(isLeg?6:3))};
+  const name=isMyth?d.boss.loot:(pre+' '+t+(suf?' '+suf:''));
+  return{name,type:t,rarity:dropRar,slot:typeSlot(t),enchantLevel:0,isBossDrop:true,dungeonTier:dIdx,bonus:rollGearBonus(dropRar),
+    stats:{dmg:Math.floor(b*(isMyth?1.2:.85)),ac:Math.floor(b*(isMyth?.8:.55)),crit:Math.floor((isMyth?4:2)+Math.random()*(isMyth?6:4)),hp:Math.floor(b*(isMyth?2.5:1.7))},
+    value:Math.floor(b*(isMyth?6:3))};
 }
 
 function typeSlot(t){return{Sword:'weapon',Dagger:'weapon',Staff:'weapon',Bow:'weapon',Shield:'offhand',Helmet:'head',Chestplate:'chest',Gauntlets:'hands',Boots:'feet',Ring:'ring',Amulet:'neck',Cloak:'offhand'}[t]||'weapon';}
@@ -1578,9 +1607,10 @@ function itemHTML(item,buttons,extra=''){
   const m=v=>v>0?`<span style="color:var(--green3)">+${v}</span>`:v===0?`<span style="color:var(--txt3)">0</span>`:`<span style="color:var(--red3)">${v}</span>`;
   const bossTag=item.isBossDrop?`<span style="font-size:9px;color:var(--gold3);font-family:var(--font-d);margin-left:5px">★ Boss Drop</span>`:'';
   const spTag=item.specialty?`<div style="margin-top:7px;padding:5px 9px;background:rgba(80,50,0,.35);border:1px solid var(--amber2);border-radius:6px;font-size:10.5px;font-family:var(--font-m)"><span style="color:var(--amber3)">${item.specialty.icon} ${item.specialty.label}</span> <span style="color:var(--txt3)">—</span> <span style="color:var(--txt2)">${item.specialty.desc}</span></div>`:'';
+  const bonusTag2=item.bonus?`<span style="font-size:8.5px;color:var(--amber3);font-family:var(--font-m);margin-left:6px">+${item.bonus.val}${item.bonus.label}</span>`:'';
   return`<div style="display:flex;align-items:center;gap:10px;margin-bottom:9px">
     <div style="width:40px;height:40px;flex-shrink:0">${ISVG[item.type]||''}</div>
-    <div><div style="font-weight:700;color:${RARITY_C[item.rarity]};font-family:var(--font-d)">${item.name}${item.enchantLevel?' <span style="color:var(--purple3)">+'+item.enchantLevel+'</span>':''}${bossTag}</div>
+    <div><div style="font-weight:700;color:${RARITY_C[item.rarity]};font-family:var(--font-d)">${item.name}${item.enchantLevel?' <span style="color:var(--purple3)">+'+item.enchantLevel+'</span>':''}${bossTag}${bonusTag2}</div>
     <div style="font-size:9.5px;color:var(--txt3);font-family:var(--font-d);letter-spacing:.3px">${item.rarity.toUpperCase()} · ${item.slot} · ${item.value}gp</div></div></div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:9px;font-size:11px;font-family:var(--font-m)">
     <div class="card-inner">⚔ DMG ${m(item.stats.dmg)}</div>
@@ -1644,14 +1674,23 @@ function renderShop(){
   const gr=document.getElementById('shop-grid');gr.innerHTML='';
   G.shopItems.forEach((item,i)=>{
     const ok=G.gold>=item.price;const d=document.createElement('div');d.className='shop-card rc-'+item.rarity;
-    d.innerHTML=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+    const equipped=item.slot?G.equip[item.slot]:null;
+    const bonusTag=item.bonus?`<span style="font-size:8.5px;color:var(--amber3);font-family:var(--font-m)">+${item.bonus.val}${item.bonus.label}</span>`:'';
+    let compHTML='';
+    if(equipped){
+      const dDmg=item.stats.dmg-equipped.stats.dmg,dAc=item.stats.ac-equipped.stats.ac,dCrit=item.stats.crit-equipped.stats.crit,dHp=item.stats.hp-equipped.stats.hp;
+      const c=v=>v>0?`<span style="color:var(--green3)">+${v}</span>`:`<span style="color:var(--red3)">${v}</span>`;
+      compHTML=`<div style="font-size:8.5px;color:var(--txt3);font-family:var(--font-m);border-top:1px dashed var(--bord);margin-top:4px;padding-top:3px">vs equipped: ${c(dDmg)}⚔ ${c(dAc)}🛡 ${c(dCrit)}%🎯 ${c(dHp)}❤</div>`;
+    }
+    d.innerHTML=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
       <div style="width:34px;height:34px;flex-shrink:0">${ISVG[item.type]||''}</div>
       <div style="flex:1;min-width:0">
         <div style="font-size:11.5px;font-weight:700;color:${RARITY_C[item.rarity]};font-family:var(--font-d);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${item.name}</div>
-        <div style="font-size:8.5px;color:var(--txt3);font-family:var(--font-d);letter-spacing:.3px">${item.rarity.toUpperCase()} · ${item.slot}</div>
+        <div style="font-size:8.5px;color:var(--txt3);font-family:var(--font-d);letter-spacing:.3px">${item.rarity.toUpperCase()} · ${item.slot} ${bonusTag}</div>
       </div></div>
-      <div style="font-size:9.5px;color:var(--txt2);margin-bottom:7px;font-family:var(--font-m)">+${item.stats.dmg}⚔ +${item.stats.ac}🛡 +${item.stats.crit}%🎯 +${item.stats.hp}❤</div>
-      <button class="btn ${ok?'btn-gold':'btn-red'}" style="width:100%;font-size:10.5px;padding:5px" onclick="buyItem(${i})" ${!ok?'disabled':''}>
+      <div style="font-size:9.5px;color:var(--txt2);margin-bottom:4px;font-family:var(--font-m)">+${item.stats.dmg}⚔ +${item.stats.ac}🛡 +${item.stats.crit}%🎯 +${item.stats.hp}❤</div>
+      ${compHTML}
+      <button class="btn ${ok?'btn-gold':'btn-red'}" style="width:100%;font-size:10.5px;padding:5px;margin-top:5px" onclick="buyItem(${i})" ${!ok?'disabled':''}>
         💰 ${item.price.toLocaleString()}gp${!ok?' (-'+(item.price-G.gold)+')':''}</button>`;
     gr.appendChild(d);
   });
@@ -1661,6 +1700,7 @@ function buyItem(idx){
   if(G.gold<item.price){push('Not enough gold!');return;}
   if(G.bag.length>=24&&G.vault.length>=80){push('No space in bag or vault!');return;}
   G.gold-=item.price;G.shopItems.splice(idx,1);G.shopBuys=(G.shopBuys||0)+1;
+  item.fromShop=true;
   lootItem(item);push('Purchased: '+item.name);SFX.buy();renderShop();renderAll();queueSave();
 }
 

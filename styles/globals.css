@@ -103,10 +103,10 @@ img[src^="data:image/png"]{
 .inv-slot.filled{border-color:var(--bord2)}
 .inv-slot svg{width:28px;height:28px}
 .rc-common{border-color:#2a2c3e!important}
-.rc-uncommon{border-color:var(--teal2)!important}
-.rc-rare{border-color:var(--blue2)!important}
-.rc-epic{border-color:var(--purple2)!important}
-.rc-legendary{border-color:var(--amber2)!important;background:rgba(62,34,4,.4)!important;box-shadow:inset 0 0 10px rgba(196,144,30,.18),0 0 8px rgba(196,144,30,.12)}
+.rc-rare{border-color:var(--teal2)!important}
+.rc-epic{border-color:var(--blue2)!important}
+.rc-legendary{border-color:var(--purple2)!important}
+.rc-mythic{border-color:var(--amber2)!important;background:rgba(62,34,4,.4)!important;box-shadow:inset 0 0 10px rgba(196,144,30,.18),0 0 8px rgba(196,144,30,.12)}
 .inv-slot .qty-badge{position:absolute;bottom:1px;right:3px;font-size:8px;font-family:var(--font-m);color:var(--gold3)}
 
 /* ── TOP BAR ── */

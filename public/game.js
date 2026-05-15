@@ -1264,7 +1264,7 @@ function combatTick(){
 
 function enemyDied(){
   const d=DUNGEONS[G.activeDungeon];
-  const xpG=Math.floor(G.enemy.xp*d.xm*1.5);
+  const xpG=Math.floor(G.enemy.xp*d.xm*0.9);
   G.xp+=xpG;G.gold+=G.enemy.g;G.totalGold+=G.enemy.g;G.killed++;
   const isBoss=G.enemy.isBoss;
   if(isBoss){
@@ -1352,7 +1352,7 @@ function toggleAutoRetry(){
 }
 
 function levelUp(){
-  G.xp-=G.xpNext;G.level++;G.xpNext=Math.floor(100*Math.pow(1.22,G.level-1));
+  G.xp-=G.xpNext;G.level++;G.xpNext=Math.floor(100*Math.pow(1.30,G.level-1));
   const _hpCap={rogue:12,mage:10,paladin:18,archer:13}[G.cls]||12;
   const hg=Math.min(_hpCap,Math.floor(7+G.con*.45+Math.random()*4+1));
   const mg=Math.floor(5+G.wis*.4+Math.random()*4);

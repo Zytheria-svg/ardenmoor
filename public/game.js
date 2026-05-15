@@ -262,7 +262,7 @@ const CLS={
     abs:[
       {name:'Shadowstrike',icon:'🌑',tip:'Triple crit window for 1 hit',mana:25,cd:9,eff:'shadow'},
       {name:'Shadow Dance',icon:'💨',tip:'+50% dodge chance for 5 turns',mana:20,cd:8,eff:'dance'},
-      {name:'Hemorrhage',icon:'🩸',tip:'Bleed 8% HP/turn for 6 turns',mana:30,cd:12,eff:'hemorrhage'}
+      {name:'Hemorrhage',icon:'🩸',tip:'Bleed 4% HP/turn for 4 turns',mana:30,cd:14,eff:'hemorrhage'}
     ]},
   mage:{n:'Mage',align:'Neutral',str:6,dex:8,int:18,con:8,wis:14,cha:10,hp:60,mana:120,crit:10,dmg:[12,22],ac:10,atk:7,
     prof:'Arcana, History, Investigation',col:'#5245c2',badge:'background:#281e78;color:#8878ee',
@@ -1123,7 +1123,7 @@ function combatTick(){
 
   // Ability DOTs fire BEFORE tickStatuses so the last round still procs
   if(enemyStatus.fireball&&G.enemy){const fd=Math.floor((G.enemy.maxHp||G.enemy.hp)*.04);G.enemy.hp-=fd;logMsg('🔥 Fireball burns: '+fd+' dmg','info');updateEnemyBars();if(G.enemy.hp<=0){enemyDied();return;}}
-  if(enemyStatus.hemorrhage&&G.enemy){const hd=Math.floor((G.enemy.maxHp||G.enemy.hp)*.08);G.enemy.hp-=hd;logMsg('🩸 Hemorrhage: '+hd+' dmg','info');updateEnemyBars();if(G.enemy.hp<=0){enemyDied();return;}}
+  if(enemyStatus.hemorrhage&&G.enemy){const hd=Math.floor((G.enemy.maxHp||G.enemy.hp)*.04);G.enemy.hp-=hd;logMsg('🩸 Hemorrhage: '+hd+' dmg','info');updateEnemyBars();if(G.enemy.hp<=0){enemyDied();return;}}
   if(enemyStatus.poison_arrow&&G.enemy){const pad=Math.floor((G.enemy.maxHp||G.enemy.hp)*.03);G.enemy.hp-=pad;logMsg('☠️ Poison Arrow: '+pad+' dmg','info');updateEnemyBars();if(G.enemy.hp<=0){enemyDied();return;}}
   if(heroStatus.aura){const ah=Math.floor(G.maxHp*.05);G.hp=Math.min(G.maxHp,G.hp+ah);logMsg('💛 Holy Aura: +'+ah+' HP','good');flashFx('hero-svg-big','heal-flash');}
 
@@ -1398,8 +1398,8 @@ function useAbility(idx=0){
     logMsg('💨 Shadow Dance — +50% dodge for 5 turns!','good');
     push('💨 Shadow Dance: +50% dodge!');
   } else if(ab.eff==='hemorrhage'){
-    addStatus('enemy','hemorrhage',6,{icon:'🩸',label:'Hemorrhage',cls:'sfx-poison'});
-    logMsg('🩸 Hemorrhage! Enemy bleeds 8% HP/turn for 6 turns!','crit');
+    addStatus('enemy','hemorrhage',4,{icon:'🩸',label:'Hemorrhage',cls:'sfx-poison'});
+    logMsg('🩸 Hemorrhage! Enemy bleeds 4% HP/turn for 4 turns!','crit');
     push('🩸 Hemorrhage applied!');
   } else if(ab.eff==='surge'){
     const dmg=Math.floor((dMin+Math.random()*(dMax-dMin))*(3.2+Math.random()*.8));

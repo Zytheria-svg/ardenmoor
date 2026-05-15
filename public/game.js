@@ -752,7 +752,7 @@ function initTitle(){
     si.style.display='block';si.textContent=`Last save: ${save.G.charName} — Level ${save.G.level}${save.G.prestige?` ⭐×${save.G.prestige}`:''}`;
   } else {nb.textContent='⚔ Begin Adventure';}
 }
-document.addEventListener('DOMContentLoaded',initTitle);
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',initTitle);}else{initTitle();}
 
 function continueGame(){
   const s=loadGame();if(!s||!s.G){push('No save found!');return;}

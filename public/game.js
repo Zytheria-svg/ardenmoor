@@ -799,6 +799,7 @@ function continueGame(){
   document.getElementById('enemy-card').style.display='none';
   document.getElementById('enc-banner').style.display='none';
   showScreen('s-game');renderAll();showTab('t-battle','tb-b');refreshShop(false);updateHeroVisuals();
+  setTimeout(()=>setArenaBg(null),0);
   calcOfflineProgress(s.ts);
   push('⚔ Welcome back, '+G.charName+'!');
 }
@@ -841,6 +842,7 @@ function startGame(cls){
     potions:{hp_s:2},potionsUsed:0,enchants:0,dungeonRuns:[0,0,0,0,0,0],autoEquip:false,autoRetry:true,autoSell:false,autoPotion:false};
   abCDs=[0,0,0];shieldHits=0;shadowReady=false;heroStatus={};enemyStatus={};
   showScreen('s-game');renderAll();showTab('t-battle','tb-b');refreshShop(false);updateHeroVisuals();
+  setTimeout(()=>setArenaBg(null),0);
   push('⚔ '+G.charName+' enters Ardenmoor!','info');saveGame();
   // Show tutorial for first time players
   showTutorial(0);

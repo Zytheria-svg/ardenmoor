@@ -253,11 +253,11 @@ export default function Home() {
       <svg width="100%" height="100%" viewBox="0 0 600 200" style="position:absolute;top:0;left:0;pointer-events:none">
         <defs><radialGradient id="floorGrad" cx="50%" cy="100%" r="80%"><stop offset="0%" stop-color="#000" stop-opacity=".35"/><stop offset="100%" stop-color="#000" stop-opacity="0"/></radialGradient></defs>
         <rect y="120" width="600" height="80" fill="url(#floorGrad)"/>
-        <ellipse cx="215" cy="163" rx="45" ry="6" fill="#000" fill-opacity=".4"/>
-        <ellipse cx="385" cy="163" rx="45" ry="6" fill="#000" fill-opacity=".4"/>
+        <ellipse cx="200" cy="163" rx="45" ry="6" fill="#000" fill-opacity=".4"/>
+        <ellipse cx="400" cy="163" rx="45" ry="6" fill="#000" fill-opacity=".4"/>
       </svg>
-      <div class="fighter" style="left:185px;bottom:37px" id="hero-fighter"><svg id="hero-svg-big" width="60" height="80" viewBox="0 0 60 80"></svg></div>
-      <div class="fighter" style="right:185px;bottom:37px" id="enemy-fighter"><svg id="enemy-svg-big" width="60" height="80" viewBox="0 0 60 80"></svg></div>
+      <div class="fighter" style="left:30%;bottom:37px" id="hero-fighter"><svg id="hero-svg-big" width="60" height="80" viewBox="0 0 60 80"></svg></div>
+      <div class="fighter" style="right:30%;bottom:37px" id="enemy-fighter"><svg id="enemy-svg-big" width="60" height="80" viewBox="0 0 60 80"></svg></div>
       <div id="dmg-layer" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none"></div>
     </div>
     <div class="battle-hud">

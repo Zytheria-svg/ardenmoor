@@ -467,6 +467,25 @@ const ISVG={
 // ═══════════════════════════════════════
 // SVG CHARACTERS
 // ═══════════════════════════════════════
+function _rmBlk(el){
+  if(el.dataset.proc)return;
+  el.dataset.proc='1';
+  var c=document.createElement('canvas');
+  var i=new Image();
+  i.crossOrigin='anonymous';
+  i.onload=function(){
+    c.width=i.width;c.height=i.height;
+    var x=c.getContext('2d');
+    x.drawImage(i,0,0);
+    var d=x.getImageData(0,0,c.width,c.height),p=d.data;
+    for(var j=0;j<p.length;j+=4){
+      if(p[j]<50&&p[j+1]<50&&p[j+2]<50)p[j+3]=0;
+    }
+    x.putImageData(d,0,0);
+    el.src=c.toDataURL();
+  };
+  i.src=el.src;
+}
 function heroSVG(cls,w,h){
   const HERO_IMGS={
     rogue:'/hero-rogue.png',
@@ -475,7 +494,7 @@ function heroSVG(cls,w,h){
     archer:'/hero-archer.png'
   };
   const src=HERO_IMGS[cls]||HERO_IMGS.rogue;
-  return `<img src="${src}" width="${w}" height="${h}" style="object-fit:contain;image-rendering:auto;mix-blend-mode:screen;filter:drop-shadow(0 2px 8px rgba(0,0,0,.8))" />`;
+  return `<img src="${src}" width="${w}" height="${h}" onload="_rmBlk(this)" style="object-fit:contain;image-rendering:auto;filter:drop-shadow(0 2px 8px rgba(0,0,0,.8))" />`;
 }
 
 function enemySVG(name,w,h){
@@ -1981,6 +2000,8 @@ document.addEventListener('keydown',e=>{
   else if(k==='q')useAbility(0);else if(k==='w')useAbility(1);else if(k==='e')useAbility(2);
   else if(k==='s'&&!G.inCombat&&document.getElementById('t-battle').classList.contains('on'))enterDungeon();
 });
+
+
 
 
 

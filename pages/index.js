@@ -7,7 +7,7 @@ export default function Home() {
       <Head>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-        <title>ARDENMOOR — Souls · Idle · D&D</title>
+        <title>HEXO IDLE — Souls · Idle · D&D</title>
       </Head>
 
       {/* Inject Supabase credentials as window globals so game.js can read them */}
@@ -106,17 +106,17 @@ export default function Home() {
       <rect x="30" y="41" width="20" height="6" fill="#e4b440" rx="2"/>
       <circle cx="40" cy="40" r="3" fill="#ffd468" opacity=".8"/>
     </svg>
-    <div class="title-logo">ARDENMOOR</div>
+    <div class="title-logo">HEXO IDLE</div>
     <div class="title-sub">Souls · Idle · D&amp;D</div>
     <div style="width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--bord3),transparent);margin:18px auto"></div>
-    <p style="color:var(--txt2);font-size:15px;line-height:1.9;font-style:italic;margin-bottom:28px">Six dungeons of darkness await.<br/>One champion shall rise to legend.</p>
+    <p style="color:var(--txt2);font-size:15px;line-height:1.9;font-style:italic;margin-bottom:28px">Ten dungeons of darkness await.<br/>One champion shall rise to legend.</p>
     <div style="display:flex;flex-direction:column;gap:10px;align-items:center;margin-bottom:20px">
       <button class="btn btn-primary btn-xl" id="btn-continue" style="width:220px;display:none" onclick="continueGame()">▶ Continue Journey</button>
       <button class="btn btn-lg" id="btn-newgame" style="width:220px;background:var(--bg2);border-color:var(--bord2)" onclick="gotoCharSelect()">⚔ New Adventure</button>
       <div id="save-info" style="font-size:11px;color:var(--txt3);font-style:italic;display:none"></div>
     </div>
     <div style="display:flex;align-items:center;justify-content:center;gap:16px;font-size:11px;color:var(--txt3);font-family:var(--font-d);letter-spacing:.5px">
-      <span>4 Classes</span><div class="title-sep"></div><span>6 Dungeons</span><div class="title-sep"></div><span>Prestige System</span>
+      <span>4 Classes</span><div class="title-sep"></div><span>10 Dungeons</span><div class="title-sep"></div><span>Prestige System</span>
     </div>
     <div style="margin-top:20px;font-size:10px;color:var(--txt3)">v12.0 — Auto-saves to browser · ☁ Cloud Save supported</div>
     <div style="margin-top:10px">
@@ -287,7 +287,7 @@ export default function Home() {
 
 <!-- DUNGEON TAB -->
 <div id="t-dungeon" class="tab-c">
-  <div style="font-family:var(--font-d);font-size:10.5px;color:var(--txt3);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">The Dungeons of Ardenmoor</div>
+  <div style="font-family:var(--font-d);font-size:10.5px;color:var(--txt3);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">The Dungeons of Hexo Idle</div>
   <div style="display:flex;flex-direction:column;gap:8px" id="dng-list"></div>
 </div>
 
@@ -398,7 +398,7 @@ export default function Home() {
 <div id="t-storage" class="tab-c">
 <div class="card">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px">
-    <div style="font-family:var(--font-d);font-size:14px;color:var(--gold2)">📦 Vault <span style="font-size:11px;color:var(--txt3);font-weight:400">(<span id="vault-ct">0</span>/80)</span></div>
+    <div style="font-family:var(--font-d);font-size:14px;color:var(--gold2)">📦 Vault <span style="font-size:11px;color:var(--txt3);font-weight:400">(<span id="vault-ct">0</span>/100)</span></div>
     <div style="display:flex;gap:5px;flex-wrap:wrap">
       <button id="vault-selmode-btn" class="btn" style="font-size:10.5px;padding:4px 9px;border-color:var(--bord2)" onclick="toggleVaultSelectMode()">🔲 Select</button>
       <button class="btn" style="font-size:10.5px;padding:4px 9px" onclick="moveVaultSelectedToBag()">→ Bag (Sel)</button>

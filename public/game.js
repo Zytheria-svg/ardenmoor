@@ -55,7 +55,7 @@ function setSpeed(s){
 const SK='ardenmoor_v6';
 function saveGame(){if(!G)return;try{localStorage.setItem(SK,JSON.stringify({G,ts:Date.now()}));}catch(e){}}
 function loadGame(){try{const r=localStorage.getItem(SK)||localStorage.getItem('ardenmoor_v5');return r?JSON.parse(r):null;}catch(e){return null;}}
-function exportSave(){if(!G){alert('No game to export.');return;}const s=localStorage.getItem(SK)||'';const a=document.createElement('a');a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(s);a.download='ardenmoor_save.json';a.click();}
+function exportSave(){if(!G){alert('No game to export.');return;}const s=localStorage.getItem(SK)||'';const a=document.createElement('a');a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(s);a.download='hexo_idle_save.json';a.click();}
 function importSavePrompt(){const txt=prompt('Paste your save data here:');if(!txt)return;try{const p=JSON.parse(txt);if(!p.G)throw 0;localStorage.setItem(SK,txt);location.reload();}catch(e){alert('Invalid save data.');}}
 let _aSaveT=null;
 function queueSave(){clearTimeout(_aSaveT);_aSaveT=setTimeout(saveGame,1500);}
@@ -223,7 +223,7 @@ function syncThemeBtn(){
 // TUTORIAL
 // ═══════════════════════════════════════
 const TUT_STEPS=[
-  {title:'Welcome to Ardenmoor!',body:'You are a lone champion delving into six cursed dungeons. Each dungeon has 5 floors + a boss. Clear the boss to progress your legend!',icon:'⚔'},
+  {title:'Welcome to Hexo Idle!',body:'You are a lone champion delving into ten cursed dungeons. Each dungeon has 5 floors + a boss. Clear the boss to progress your legend!',icon:'⚔'},
   {title:'Combat',body:'Once you enter a dungeon, combat runs automatically. Your hero attacks, dodges, and uses passives — but you can click abilities and potions manually!',icon:'🗡️'},
   {title:'Abilities & Mana',body:'Each class has a unique ability. Use it wisely — it costs Mana and has a cooldown. Mana regenerates each combat round.',icon:'✨'},
   {title:'Loot & Equipment',body:'Enemies drop items of Common→Legendary rarity. Equip them from your Bag via the Sheet tab. Gear up to survive deeper dungeons!',icon:'🎒'},
@@ -300,16 +300,28 @@ const DUNGEONS=[
   {id:1,n:'Crypt of Whispers',em:'⚰️',col:'#5245c2',desc:'Ancient tombs. The restless dead hunger.',minLvl:6,xm:1.7,gm:1.7,eArmor:6,
    en:[{n:'Skeleton Warrior',hp:130,dmg:[18,28],xp:42,g:14},{n:'Ghoul',hp:160,dmg:[22,34],xp:54,g:17},{n:'Shadow Wraith',hp:110,dmg:[16,26],xp:48,g:15},{n:'Tomb Guardian',hp:200,dmg:[26,40],xp:65,g:20}],
    boss:{n:'Lich Vareth',hp:1400,dmg:[32,50],xp:420,g:180,loot:'Vareth\'s Phylactery'}},
-  {id:2,n:'Fungal Depths',em:'🍄',col:'#8c5c08',desc:'Toxic spores fill the air.',minLvl:13,xm:2.4,gm:2.4,eArmor:18,
+  {id:2,n:'Fungal Depths',em:'🍄',col:'#8c5c08',desc:'Toxic spores fill the air.',minLvl:11,xm:2.4,gm:2.4,eArmor:18,
    en:[{n:'Spore Zombie',hp:360,dmg:[38,58],xp:90,g:32},{n:'Myconid Elder',hp:440,dmg:[46,68],xp:115,g:40},{n:'Carrion Crawler',hp:320,dmg:[34,52],xp:100,g:36},{n:'Otyugh',hp:540,dmg:[55,80],xp:135,g:50}],
    boss:{n:'The Blooming Death',hp:4800,dmg:[65,95],xp:950,g:420,loot:'Sporeweaver\'s Heart'}},
-  {id:3,n:'Infernal Citadel',em:'🔥',col:'#b02828',desc:'Brimstone and hellfire.',minLvl:22,xm:3.5,gm:3.5,eArmor:40,
+  {id:3,n:'Infernal Citadel',em:'🔥',col:'#b02828',desc:'Brimstone and hellfire.',minLvl:16,xm:3.5,gm:3.5,eArmor:40,
    en:[{n:'Hell Hound',hp:800,dmg:[70,105],xp:180,g:80},{n:'Chain Devil',hp:980,dmg:[88,128],xp:230,g:100},{n:'Fire Elemental',hp:720,dmg:[65,98],xp:200,g:90},{n:'Pit Fiend Scout',hp:1200,dmg:[105,150],xp:280,g:120}],
    boss:{n:'Arch-Devil Malphas',hp:14000,dmg:[120,175],xp:2400,g:1000,loot:'Malphas\'s Brand'}},
-  {id:4,n:'Sunken Necropolis',em:'🌊',col:'#164488',desc:'A cursed city beneath black waves.',minLvl:32,xm:5,gm:5,eArmor:80,
+  {id:4,n:'Sunken Necropolis',em:'🌊',col:'#164488',desc:'A cursed city beneath black waves.',minLvl:21,xm:5,gm:5,eArmor:80,
    en:[{n:'Drowned Knight',hp:2200,dmg:[150,210],xp:380,g:190},{n:'Sea Wraith',hp:1900,dmg:[138,195],xp:420,g:200},{n:'Aboleth Spawn',hp:2600,dmg:[170,240],xp:460,g:210},{n:'Kraken Cultist',hp:2400,dmg:[160,225],xp:500,g:220}],
    boss:{n:'The Drowned King',hp:38000,dmg:[200,280],xp:5500,g:2200,loot:'Crown of the Deep'}},
-  {id:5,n:'Void Sanctum',em:'🌌',col:'#5245c2',desc:"Reality fractures. The Void God's eye opens.",minLvl:45,xm:8,gm:8,eArmor:150,
+  {id:5,n:'Ashen Wastes',em:'🌋',col:'#8c3a08',desc:'A scorched wasteland where lava flows like rivers.',minLvl:26,xm:6,gm:6,eArmor:110,
+   en:[{n:'Ash Revenant',hp:3800,dmg:[210,290],xp:650,g:310},{n:'Ember Drake',hp:4200,dmg:[230,320],xp:700,g:330},{n:'Magma Golem',hp:5000,dmg:[250,350],xp:760,g:360},{n:'Cinder Wraith',hp:3600,dmg:[200,280],xp:680,g:320}],
+   boss:{n:'Ignareth the Undying',hp:70000,dmg:[270,380],xp:8500,g:4000,loot:'Ignareth\'s Ember Core'}},
+  {id:6,n:'Crystal Catacombs',em:'💎',col:'#2080a0',desc:'Labyrinthine tunnels of razor-sharp crystal.',minLvl:31,xm:7,gm:7,eArmor:130,
+   en:[{n:'Crystal Golem',hp:5500,dmg:[260,360],xp:800,g:400},{n:'Shard Wraith',hp:5000,dmg:[250,350],xp:840,g:410},{n:'Prismatic Serpent',hp:6000,dmg:[280,390],xp:880,g:430},{n:'Gemstone Horror',hp:6500,dmg:[300,420],xp:940,g:450}],
+   boss:{n:'The Faceted King',hp:90000,dmg:[320,450],xp:11000,g:5500,loot:'The Faceted Crown'}},
+  {id:7,n:'Shadow Citadel',em:'🌑',col:'#3a2060',desc:'A fortress blanketed in eternal darkness.',minLvl:36,xm:7.5,gm:7.5,eArmor:140,
+   en:[{n:'Shade Knight',hp:7000,dmg:[320,445],xp:880,g:440},{n:'Umbral Assassin',hp:6500,dmg:[340,475],xp:920,g:460},{n:'Darkness Elemental',hp:7500,dmg:[310,435],xp:960,g:480},{n:'Soul Harvester',hp:8000,dmg:[350,490],xp:1020,g:510}],
+   boss:{n:'Malachar, Lord of Shadows',hp:110000,dmg:[360,510],xp:14000,g:7000,loot:'Malachar\'s Shadow Crown'}},
+  {id:8,n:'Abyssal Maw',em:'🕳',col:'#1a0a30',desc:'The gaping mouth of the abyss — where sanity ends.',minLvl:41,xm:8,gm:8,eArmor:145,
+   en:[{n:'Abyss Stalker',hp:8500,dmg:[355,495],xp:950,g:475},{n:'Rift Devourer',hp:9000,dmg:[370,515],xp:1000,g:500},{n:'Void Hound',hp:8000,dmg:[340,475],xp:970,g:485},{n:'Abyssal Titan',hp:10000,dmg:[390,545],xp:1100,g:540}],
+   boss:{n:'The Hungering Void',hp:130000,dmg:[370,525],xp:16000,g:8000,loot:'Heart of the Abyss'}},
+  {id:9,n:'Void Sanctum',em:'🌌',col:'#5245c2',desc:"Reality fractures. The Void God's eye opens.",minLvl:46,xm:8,gm:8,eArmor:150,
    en:[{n:'Void Stalker',hp:5500,dmg:[280,390],xp:900,g:450},{n:'Reality Shredder',hp:5000,dmg:[300,420],xp:960,g:470},{n:'Chaos Elemental',hp:6500,dmg:[330,460],xp:1100,g:500},{n:'Dimensional Horror',hp:7500,dmg:[360,500],xp:1300,g:550}],
    boss:{n:"Xal'Zareth, Void God",hp:120000,dmg:[380,540],xp:18000,g:9000,loot:"Xal'Zareth's Eye"}}
 ];
@@ -323,6 +335,7 @@ const POTIONS={
   mana:{name:'Mana Draught',icon:'💧',desc:'Restore 50% Mana',price:60,eff:'mana'},
   speed:{name:'Haste Tonic',icon:'⚗️',desc:'3× combat speed for 5 rounds',price:80,eff:'speed'},
   crit:{name:'Sharpening Oil',icon:'🫙',desc:'+15% crit for 8 rounds',price:90,eff:'crit'},
+  xp_draught:{name:'XP Draught',icon:'⭐',desc:'Double XP gain for 10 turns',price:1000,eff:'xp_draught'},
 };
 
 function usePotion(type){
@@ -340,6 +353,7 @@ function usePotion(type){
   else if(type==='mana'){const m=Math.floor(G.maxMana*.5);G.mana=Math.min(G.maxMana,G.mana+m);logMsg('💧 Mana restored: +'+m,'info');}
   else if(type==='speed'){addStatus('hero','haste',5,{icon:'⚗️',label:'Haste',cls:'sfx-regen'});logMsg('⚗️ Haste! Combat speed tripled for 5 rounds','info');}
   else if(type==='crit'){addStatus('hero','crit_up',8,{icon:'🫙',label:'+Crit',cls:'sfx-shield'});logMsg('🫙 Sharpening Oil: +15% crit for 8 rounds','info');}
+  else if(type==='xp_draught'){addStatus('hero','xp_double',10,{icon:'⭐',label:'2×XP',cls:'sfx-regen'});logMsg('⭐ XP Draught: double XP for 10 turns!','info');}
   renderHeroBars();renderPotionBar();queueSave();
 }
 
@@ -852,17 +866,17 @@ function startGame(cls){
   const c=CLS[cls];
   const titles={rogue:'Shadowblade',mage:'Archmage',paladin:'Lightbringer',archer:'Wanderer'};
   G={cls,charName:c.n+' the '+titles[cls],
-    level:1,xp:0,xpNext:100,gold:80,str:c.str,dex:c.dex,int:c.int,con:c.con,wis:c.wis,cha:c.cha,
+    level:1,xp:0,xpNext:1000000,gold:80,str:c.str,dex:c.dex,int:c.int,con:c.con,wis:c.wis,cha:c.cha,
     maxHp:c.hp,hp:c.hp,maxMana:c.mana,mana:c.mana,crit:c.crit,baseDmg:[...c.dmg],baseAC:c.ac,atkBonus:c.atk,
     equip:{head:null,chest:null,hands:null,feet:null,weapon:null,offhand:null,ring:null,neck:null},
     bag:[],vault:[],inCombat:false,enemy:null,step:0,clears:0,bosses:0,totalGold:80,killed:0,
     activeDungeon:0,shopItems:[],legendaryFound:false,abilityUses:0,achievements:[],shopRefreshes:0,crits:0,shopBuys:0,
     prestige:0,prestigeBonus:{str:0,dex:0,int:0,con:0,wis:0,cha:0,hp:0,mana:0,crit:0},
-    potions:{hp_s:2},potionsUsed:0,enchants:0,dungeonRuns:[0,0,0,0,0,0],autoEquip:false,autoRetry:true,autoSell:false,autoPotion:false};
+    potions:{hp_s:2},potionsUsed:0,enchants:0,dungeonRuns:[0,0,0,0,0,0,0,0,0,0],autoEquip:false,autoRetry:true,autoSell:false,autoPotion:false};
   abCDs=[0,0,0];shieldHits=0;shadowReady=false;heroStatus={};enemyStatus={};
   showScreen('s-game');renderAll();showTab('t-battle','tb-b');refreshShop(false);updateHeroVisuals();
   setTimeout(()=>setArenaBg(null),0);
-  push('⚔ '+G.charName+' enters Ardenmoor!','info');saveGame();
+  push('⚔ '+G.charName+' enters Hexo Idle!','info');saveGame();
   // Show tutorial for first time players
   showTutorial(0);
 }
@@ -889,7 +903,7 @@ function doPrestige(){
   // Reset but keep vault & gold (30%)
   const savedVault=[...G.vault];const savedGold=Math.floor(G.gold*.3);
   const c=CLS[G.cls];const pb=G.prestigeBonus;
-  G.level=1;G.xp=0;G.xpNext=100;G.gold=savedGold+200;
+  G.level=1;G.xp=0;G.xpNext=1000000;G.gold=savedGold+200;
   G.str=c.str+pb.str;G.dex=c.dex+pb.dex;G.int=c.int+pb.int;
   G.con=c.con+pb.con;G.wis=c.wis+pb.wis;G.cha=c.cha+pb.cha;
   G.maxHp=c.hp+pb.hp;G.hp=G.maxHp;G.maxMana=c.mana+pb.mana;G.mana=G.maxMana;
@@ -1017,7 +1031,7 @@ function renderDungeonList(){
         <div style="font-weight:700;font-size:13px;font-family:var(--font-d);color:${sel?'var(--red3)':d.col}">${d.n}${sel?'<span style="font-size:8.5px;letter-spacing:.5px;margin-left:5px">● ACTIVE</span>':''}</div>
         <div style="font-size:11px;color:var(--txt3);font-style:italic;margin:2px 0">${d.desc}</div>
         <div style="font-size:9.5px;color:var(--txt3);font-family:var(--font-m)">Min LVL ${d.minLvl} · XP ×${d.xm} · Gold ×${d.gm} · Boss: ${d.boss.n}</div>
-        ${(()=>{const er=[0.15,0.20,0.27,0.35,0.44,0.55][i]||0.15;const br=[0.30,0.38,0.48,0.58,0.70,0.85][i]||0.30;const rr=[0.08,0.10,0.13,0.16,0.20,0.25][i]||0.08;const bossP=runs>0?Math.round(Math.pow(1+br,runs)*100):100;const p2pct=Math.round(Math.min(0.50+runs*0.07,0.82)*100);const dsTag=runs>=3?' <b style="color:var(--red3)">⚡DS</b>':'';return runs>0?`<div style="font-size:9px;color:var(--amber3);font-family:var(--font-m);margin-top:3px">⚔ Run ${runs+1} &nbsp;·&nbsp; Enemies <b>${Math.round((1+runs*er)*100)}%</b> &nbsp;·&nbsp; Boss <b>${bossP}%</b> · P2@${p2pct}%${dsTag} &nbsp;·&nbsp; Rewards <b style="color:var(--green3)">${Math.round((1+runs*rr)*100)}%</b></div><div style="font-size:8.5px;color:var(--txt3);font-family:var(--font-m);margin-top:1px">Boss scales exponentially ×${Math.round((1+br)*10)/10} per run · ⚡Double Strike unlocks run 3</div>`:`<div style="font-size:8.5px;color:var(--txt3);font-family:var(--font-m);margin-top:2px">Each clear: +${Math.round(er*100)}% enemy · ×${Math.round((1+br)*10)/10} boss (compound) · +${Math.round(rr*100)}% reward</div>`;})()}
+        ${(()=>{const er=[0.15,0.20,0.27,0.35,0.44,0.55,0.62,0.69,0.76,0.83][i]||0.15;const br=[0.30,0.38,0.48,0.58,0.70,0.85,0.92,0.98,1.05,1.12][i]||0.30;const rr=[0.08,0.10,0.13,0.16,0.20,0.25,0.28,0.31,0.34,0.38][i]||0.08;const bossP=runs>0?Math.round(Math.pow(1+br,runs)*100):100;const p2pct=Math.round(Math.min(0.50+runs*0.07,0.82)*100);const dsTag=runs>=3?' <b style="color:var(--red3)">⚡DS</b>':'';return runs>0?`<div style="font-size:9px;color:var(--amber3);font-family:var(--font-m);margin-top:3px">⚔ Run ${runs+1} &nbsp;·&nbsp; Enemies <b>${Math.round((1+runs*er)*100)}%</b> &nbsp;·&nbsp; Boss <b>${bossP}%</b> · P2@${p2pct}%${dsTag} &nbsp;·&nbsp; Rewards <b style="color:var(--green3)">${Math.round((1+runs*rr)*100)}%</b></div><div style="font-size:8.5px;color:var(--txt3);font-family:var(--font-m);margin-top:1px">Boss scales exponentially ×${Math.round((1+br)*10)/10} per run · ⚡Double Strike unlocks run 3</div>`:`<div style="font-size:8.5px;color:var(--txt3);font-family:var(--font-m);margin-top:2px">Each clear: +${Math.round(er*100)}% enemy · ×${Math.round((1+br)*10)/10} boss (compound) · +${Math.round(rr*100)}% reward</div>`;})()}
       </div>
       ${!locked?`<button class="btn" style="font-size:10.5px;padding:4px 9px;flex-shrink:0" onclick="setDungeon(${i})">${sel?'✓ Active':'Select'}</button>`:`<span style="font-size:11px;color:var(--txt3);flex-shrink:0">🔒 LVL ${d.minLvl}</span>`}
     </div>`;
@@ -1121,8 +1135,8 @@ function spawnNext(){
   } else if(isBoss){
     const runs=(G.dungeonRuns||[])[G.activeDungeon]||0;
     // EXPONENTIAL boss scaling — compound growth per run: D0=30% D1=38% D2=48% D3=58% D4=70% D5=85% per run
-    const bossRunRate=[0.08,0.10,0.13,0.16,0.20,0.25][G.activeDungeon]||0.08;
-    const rewardRate=[0.08,0.10,0.13,0.16,0.20,0.25][G.activeDungeon]||0.08;
+    const bossRunRate=[0.08,0.10,0.13,0.16,0.20,0.25,0.28,0.31,0.34,0.38][G.activeDungeon]||0.08;
+    const rewardRate=[0.08,0.10,0.13,0.16,0.20,0.25,0.28,0.31,0.34,0.38][G.activeDungeon]||0.08;
     const cappedRuns=Math.min(runs,20);
     const runBonus=cappedRuns>0?Math.pow(1+bossRunRate,cappedRuns):1;
     const rewardBonus=1+runs*rewardRate;
@@ -1140,8 +1154,8 @@ function spawnNext(){
   } else {
     const runs=(G.dungeonRuns||[])[G.activeDungeon]||0;
     // Enemy scaling stacks per dungeon tier: D0=+15% D1=+20% D2=+27% D3=+35% D4=+44% D5=+55% per run
-    const enemyRunRate=[0.05,0.07,0.09,0.11,0.14,0.18][G.activeDungeon]||0.05;
-    const rewardRate=[0.08,0.10,0.13,0.16,0.20,0.25][G.activeDungeon]||0.08;
+    const enemyRunRate=[0.05,0.07,0.09,0.11,0.14,0.18,0.21,0.24,0.27,0.30][G.activeDungeon]||0.05;
+    const rewardRate=[0.08,0.10,0.13,0.16,0.20,0.25,0.28,0.31,0.34,0.38][G.activeDungeon]||0.08;
     const runBonus=1+runs*enemyRunRate;
     const rewardBonus=1+runs*rewardRate;
     const edef=d.en[Math.floor(Math.random()*d.en.length)];
@@ -1313,16 +1327,22 @@ function combatTick(){
 
 function enemyDied(){
   const d=DUNGEONS[G.activeDungeon];
-  const xpG=Math.floor(G.enemy.xp*d.xm*0.9);
+  // Flat XP: normal=2000, elite=4000, boss=12000
+  // Divide by 10 for each dungeon tier below the highest unlocked dungeon
+  const baseXP=G.enemy.isBoss?12000:G.enemy.isElite?4000:2000;
+  const highestUnlocked=DUNGEONS.reduce((best,dng,idx)=>G.level>=dng.minLvl?idx:best,0);
+  const tierDiff=Math.max(0,highestUnlocked-G.activeDungeon);
+  let xpG=Math.max(1,Math.floor(baseXP/Math.pow(10,tierDiff)));
+  if(heroStatus.xp_double)xpG*=2;
   G.xp+=xpG;G.gold+=G.enemy.g;G.totalGold+=G.enemy.g;G.killed++;
   const isBoss=G.enemy.isBoss;
   if(isBoss){
     G.bosses++;G.clears++;
-    G.dungeonRuns=G.dungeonRuns||[0,0,0,0,0,0];
+    G.dungeonRuns=G.dungeonRuns||[0,0,0,0,0,0,0,0,0,0];
     G.dungeonRuns[G.activeDungeon]=(G.dungeonRuns[G.activeDungeon]||0)+1;
     const newRun=G.dungeonRuns[G.activeDungeon];
-    const _br=[0.30,0.38,0.48,0.58,0.70,0.85][G.activeDungeon]||0.30;
-    const _rr=[0.08,0.10,0.13,0.16,0.20,0.25][G.activeDungeon]||0.08;
+    const _br=[0.30,0.38,0.48,0.58,0.70,0.85,0.92,0.98,1.05,1.12][G.activeDungeon]||0.30;
+    const _rr=[0.08,0.10,0.13,0.16,0.20,0.25,0.28,0.31,0.34,0.38][G.activeDungeon]||0.08;
     const _nextPower=Math.round(Math.pow(1+_br,newRun)*100);
     const _nextP2=Math.round(Math.min(0.50+newRun*0.07,0.82)*100);
     const _nextDS=newRun>=3?' · ⚡ DOUBLE STRIKE':'';
@@ -1401,7 +1421,7 @@ function toggleAutoRetry(){
 }
 
 function levelUp(){
-  G.xp-=G.xpNext;G.level++;G.xpNext=Math.floor(100*Math.pow(1.30,G.level-1));
+  G.xp-=G.xpNext;G.level++;G.xpNext=1000000;
   const _hpCap={rogue:12,mage:10,paladin:18,archer:13}[G.cls]||12;
   const hg=Math.min(_hpCap,Math.floor(7+G.con*.45+Math.random()*4+1));
   const mg=Math.floor(5+G.wis*.4+Math.random()*4);
@@ -1412,6 +1432,10 @@ function levelUp(){
   if(G.level%10===0){G.cha+=2;logMsg('🎖 Milestone Lv'+G.level+': +2 Charisma!','info');}
   logMsg('🌟 LEVEL UP → '+G.level+' | +'+hg+' HP +'+mg+' Mana','info');
   push('Level Up! → '+G.level,'lvl');showLvlUpOverlay(G.level);SFX.levelUp();renderAll();updateHeroVisuals();
+  if(G.level===50){
+    push('🎉 Congratulations, you have finished a run. You earned a free hand massage from Alen','lvl');
+    logMsg('🎉 Congratulations, you have finished a run. You earned a free hand massage from Alen','boss');
+  }
 }
 
 function showLvlUpOverlay(lvl){
@@ -1532,19 +1556,19 @@ function lootItem(item){
     const weaponTypes=['Sword','Dagger','Staff','Bow'];
     if(item.slot==='weapon'&&weaponTypes.includes(item.type)){
       const allowed=CLS[G.cls].allowedWeapons||[];
-      if(!allowed.includes(item.type)){if(G.bag.length<100)G.bag.push(item);else if(G.vault.length<80)G.vault.push(item);return;}
+      if(!allowed.includes(item.type)){if(G.bag.length<100)G.bag.push(item);else if(G.vault.length<100)G.vault.push(item);return;}
     }
     if(!cur||itemScore(item)>itemScore(cur)){
       const old=G.equip[item.slot];
       G.equip[item.slot]=item;
-      if(old){if(G.bag.length<100)G.bag.push(old);else if(G.vault.length<80)G.vault.push(old);}
+      if(old){if(G.bag.length<100)G.bag.push(old);else if(G.vault.length<100)G.vault.push(old);}
       logMsg('🔄 Auto-Equipped: '+item.name+' ('+item.slot+')','good');
       push('🔄 Auto-Equipped: '+item.name,'loot');
       renderAll();return;
     }
   }
   if(G.bag.length<100){G.bag.push(item);logMsg(rarSym(item.rarity)+' Loot: '+item.name);}
-  else if(G.vault.length<80){G.vault.push(item);logMsg(rarSym(item.rarity)+' → Vault: '+item.name);}
+  else if(G.vault.length<100){G.vault.push(item);logMsg(rarSym(item.rarity)+' → Vault: '+item.name);}
   else logMsg('⚠ Bags full! '+item.name+' lost!');
 }
 function rarSym(r){return{common:'◻',rare:'🟢',epic:'🔵',legendary:'🟣',mythic:'🟡'}[r]||'◻';}
@@ -1692,7 +1716,7 @@ function moveBagSelectedToVault(){
   let moved=0,skipped=0;
   for(const i of idxs){
     if(!G.bag[i])continue;
-    if(G.vault.length>=80){skipped++;continue;}
+    if(G.vault.length>=100){skipped++;continue;}
     G.vault.push(G.bag.splice(i,1)[0]);moved++;
   }
   bagSel.clear();bagSelectMode=false;
@@ -1745,7 +1769,7 @@ function renderVault(){
   document.getElementById('vault-ct').textContent=G.vault.length;
   const smBtn=document.getElementById('vault-selmode-btn');
   if(smBtn){smBtn.textContent=vaultSelectMode?'✅ Select ('+vaultSel.size+')':'🔲 Select';smBtn.style.borderColor=vaultSelectMode?'var(--green2)':'var(--bord2)';smBtn.style.color=vaultSelectMode?'var(--green3)':'';}
-  for(let i=0;i<80;i++){
+  for(let i=0;i<100;i++){
     const item=G.vault[i];const s=document.createElement('div');
     s.className='inv-slot'+(item?' filled rc-'+item.rarity:'');
     if(item){
@@ -1813,9 +1837,9 @@ function equipFromBag(idx){
   G.equip[item.slot]=item;G.bag.splice(idx,1);if(old)G.bag.push(old);
   push('Equipped: '+item.name);renderBag();renderSheet();document.getElementById('bag-detail').innerHTML='<div style="font-size:11px;color:var(--txt3);font-style:italic">Equipped.</div>';
 }
-function bagToVault(idx){if(G.vault.length>=80){push('Vault full!');return;}G.vault.push(G.bag.splice(idx,1)[0]);bagSel.delete(idx);renderBag();document.getElementById('bag-detail').innerHTML='<div style="font-size:11px;color:var(--txt3);font-style:italic">Moved to vault.</div>';}
+function bagToVault(idx){if(G.vault.length>=100){push('Vault full!');return;}G.vault.push(G.bag.splice(idx,1)[0]);bagSel.delete(idx);renderBag();document.getElementById('bag-detail').innerHTML='<div style="font-size:11px;color:var(--txt3);font-style:italic">Moved to vault.</div>';}
 function sellBag(idx){const i=G.bag[idx];if(!i)return;G.gold+=i.value;G.totalGold+=i.value;G.bag.splice(idx,1);bagSel.delete(idx);push('Sold for '+i.value+'gp');renderBag();renderAll();document.getElementById('bag-detail').innerHTML='<div style="font-size:11px;color:var(--txt3);font-style:italic">Sold.</div>';queueSave();}
-function bagToVaultAll(){let n=0;while(G.bag.length&&G.vault.length<80){G.vault.push(G.bag.shift());n++;}bagSel.clear();push('Moved '+n+' items to vault');renderBag();}
+function bagToVaultAll(){let n=0;while(G.bag.length&&G.vault.length<100){G.vault.push(G.bag.shift());n++;}bagSel.clear();push('Moved '+n+' items to vault');renderBag();}
 function vaultToBag(idx){if(G.bag.length>=100){push('Bag full!');return;}G.bag.push(G.vault.splice(idx,1)[0]);renderVault();document.getElementById('vault-detail').innerHTML='<div style="font-size:11px;color:var(--txt3);font-style:italic">Moved to bag.</div>';}
 function sellVault(idx){const i=G.vault[idx];if(!i)return;G.gold+=i.value;G.totalGold+=i.value;G.vault.splice(idx,1);push('Sold for '+i.value+'gp');renderVault();renderAll();document.getElementById('vault-detail').innerHTML='<div style="font-size:11px;color:var(--txt3);font-style:italic">Sold.</div>';queueSave();}
 function sortVault(){const o={legendary:0,epic:1,rare:2,uncommon:3,common:4};G.vault.sort((a,b)=>o[a.rarity]-o[b.rarity]);renderVault();}
@@ -1878,7 +1902,7 @@ function renderShop(){
 function buyItem(idx){
   const item=G.shopItems[idx];
   if(G.gold<item.price){push('Not enough gold!');return;}
-  if(G.bag.length>=100&&G.vault.length>=80){push('No space in bag or vault!');return;}
+  if(G.bag.length>=100&&G.vault.length>=100){push('No space in bag or vault!');return;}
   G.gold-=item.price;G.shopItems.splice(idx,1);G.shopBuys=(G.shopBuys||0)+1;
   item.fromShop=true;
   lootItem(item);push('Purchased: '+item.name);SFX.buy();renderShop();renderAll();queueSave();

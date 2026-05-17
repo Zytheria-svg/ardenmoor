@@ -54,7 +54,7 @@ export default function Home() {
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 11px;background:var(--bg2);border-radius:7px;border:1px solid var(--bord)">
         <span style="font-size:12px">📋 Patch Notes</span>
-        <button class="btn" style="font-size:11px;padding:3px 10px;border-color:var(--gold2);color:var(--gold2)" onclick="closeSettings();document.getElementById('s-title').scrollIntoView({behavior:'smooth'});setTimeout(()=>{const b=document.getElementById('patch-notes-box');if(b){b.style.display='block';b.scrollIntoView({behavior:'smooth',block:'center'});}},400)">v12</button>
+        <button class="btn" style="font-size:11px;padding:3px 10px;border-color:var(--gold2);color:var(--gold2)" onclick="closeSettings();document.getElementById('s-title').scrollIntoView({behavior:'smooth'});setTimeout(()=>{const b=document.getElementById('patch-notes-box');if(b){b.style.display='block';b.scrollIntoView({behavior:'smooth',block:'center'});}},400)">v13</button>
       </div>
       <div style="padding:10px 13px;background:var(--bg2);border-radius:9px;border:1px solid var(--bord)">
         <div style="font-size:12px;font-weight:600;color:var(--txt);margin-bottom:8px;font-family:var(--font-d);letter-spacing:.4px">💾 Save Management</div>
@@ -118,28 +118,26 @@ export default function Home() {
     <div style="display:flex;align-items:center;justify-content:center;gap:16px;font-size:11px;color:var(--txt3);font-family:var(--font-d);letter-spacing:.5px">
       <span>4 Classes</span><div class="title-sep"></div><span>10 Dungeons</span><div class="title-sep"></div><span>Prestige System</span>
     </div>
-    <div style="margin-top:20px;font-size:10px;color:var(--txt3)">v12.0 — Auto-saves to browser · ☁ Cloud Save supported</div>
+    <div style="margin-top:20px;font-size:10px;color:var(--txt3)">v13.0 — Auto-saves to browser · ☁ Cloud Save supported</div>
     <div style="margin-top:10px">
-      <button class="btn" style="font-size:10.5px;padding:4px 14px;border-color:var(--gold2);color:var(--gold2)" onclick="togglePatchNotes()">📋 What's New in v12</button>
+      <button class="btn" style="font-size:10.5px;padding:4px 14px;border-color:var(--gold2);color:var(--gold2)" onclick="togglePatchNotes()">📋 What's New in v13</button>
     </div>
     <div id="patch-notes-box" style="display:none;margin-top:10px;padding:12px 14px;background:rgba(20,14,40,.7);border:1px solid var(--gold2);border-radius:10px;text-align:left;max-width:420px;margin-left:auto;margin-right:auto">
-      <div style="font-family:var(--font-d);font-size:13px;color:var(--gold2);letter-spacing:.8px;margin-bottom:10px">📋 PATCH NOTES — v12.0</div>
+      <div style="font-family:var(--font-d);font-size:13px;color:var(--gold2);letter-spacing:.8px;margin-bottom:10px">📋 PATCH NOTES — v13.0</div>
       <div style="font-size:10.5px;color:var(--txt2);font-family:var(--font-m);line-height:1.75;display:flex;flex-direction:column;gap:6px">
-        <div><span style="color:var(--purple3);font-family:var(--font-d)">⚔ MULTI-ABILITY SYSTEM</span><br/>Each class now has 3 unique abilities (Q / W / E). Rogue: Shadowstrike · Shadow Dance (+50% dodge 5t) · Hemorrhage (bleed 8% HP/t). Mage: Arcane Surge · Fireball (burn 4% HP/t) · Frost Nova (freeze + 40% dmg reduction). Paladin: Divine Shield · Divine Smite (2.5× dmg + stun) · Holy Aura (regen 5% HP/t). Archer: Barrage · Poison Arrow (3% HP/t) · Eagle Eye (+30% crit 5t).</div>
+        <div><span style="color:var(--gold3);font-family:var(--font-d)">🎮 HEXO IDLE</span><br/>The game has been renamed to Hexo Idle. New identity, same adventure.</div>
         <div style="height:1px;background:var(--bord3)"></div>
-        <div><span style="color:var(--red3);font-family:var(--font-d)">🔧 BUG FIXES</span><br/>Auto-equip now respects class weapon restrictions. Shop-bought items are never auto-sold. Archer Barrage no longer lets dead enemies counterattack. Potion mass-buy now shows total cost.</div>
+        <div><span style="color:var(--purple3);font-family:var(--font-d)">🗺 10 DUNGEONS</span><br/>Expanded from 6 to 10 dungeons. Four new zones added: 🌋 Ashen Wastes (Lv26) · 💎 Crystal Catacombs (Lv31) · 🌑 Shadow Citadel (Lv36) · 🕳 Abyssal Maw (Lv41). All unlock levels rebalanced to +5 per tier.</div>
         <div style="height:1px;background:var(--bord3)"></div>
-        <div><span style="color:var(--amber3);font-family:var(--font-d)">🎯 RARITY RENAME</span><br/>Uncommon → Rare · Old Rare → Epic · Old Epic → Legendary · Old Legendary → Mythic. Cleaner tier names across the board.</div>
+        <div><span style="color:var(--amber3);font-family:var(--font-d)">🎨 DUNGEON BACKGROUNDS</span><br/>Each dungeon now has its own atmospheric background, previewed when selected. New hand-crafted hero sprites for all 4 classes with transparent backgrounds.</div>
         <div style="height:1px;background:var(--bord3)"></div>
-        <div><span style="color:var(--purple3);font-family:var(--font-d)">✦ GEAR BONUSES</span><br/>Every item rolls 1 random bonus stat (DmgRdc / AtkSpd / DgCh / HlthRgn / CrDmg / Chaos). Magnitude scales with rarity: Common +1% up to Mythic +1–4%.</div>
+        <div><span style="color:var(--teal3);font-family:var(--font-d)">⭐ XP DRAUGHT POTION</span><br/>New shop potion — doubles all XP gained for 10 turns. Price: 1,000g.</div>
         <div style="height:1px;background:var(--bord3)"></div>
-        <div><span style="color:var(--green3);font-family:var(--font-d)">⚡ 5× COMBAT SPEED</span><br/>New 5× speed button in the top bar and settings. Archer Barrage upgraded from 5 to 10 arrows.</div>
+        <div><span style="color:var(--blue3);font-family:var(--font-d)">🗄 VAULT EXPANDED</span><br/>Vault storage increased from 80 → 100 slots.</div>
         <div style="height:1px;background:var(--bord3)"></div>
-        <div><span style="color:var(--teal3);font-family:var(--font-d)">💊 AUTO-POTION</span><br/>Toggle in the Battle tab — auto-uses your best healing potion when HP falls below 35%.</div>
+        <div><span style="color:var(--green3);font-family:var(--font-d)">🎉 LEVEL 50</span><br/>Reaching level 50 now triggers a special congratulations message.</div>
         <div style="height:1px;background:var(--bord3)"></div>
-        <div><span style="color:var(--blue3);font-family:var(--font-d)">🛒 SHOP COMPARISON</span><br/>Shop items now show stat differences vs your currently equipped gear in the same slot.</div>
-        <div style="height:1px;background:var(--bord3)"></div>
-        <div><span style="color:var(--gold3);font-family:var(--font-d)">⚖ BALANCE</span><br/>Boss HP scaling reduced (capped at 20 runs, rates halved). XP formula softened for faster leveling. Drop rates increased. Cloud saves now auto-browse on settings open.</div>
+        <div><span style="color:var(--red3);font-family:var(--font-d)">⚖ XP REWORK</span><br/>Flat 1,000,000 XP per level. Enemies now give fixed XP: Normal 2,000 · Elite 4,000 · Boss 12,000. Previous dungeons give 10× less XP each time a new dungeon is unlocked.</div>
       </div>
     </div>
     <div style="margin-top:12px;padding:10px 14px;background:rgba(40,30,120,.25);border:1px solid var(--purple2);border-radius:9px;text-align:left">

@@ -249,7 +249,7 @@ export default function Home() {
 </div>
 <div>
   <div class="battle-arena" style="margin-bottom:9px">
-    <div id="arena-scene" style="width:100%;max-width:600px;height:200px;position:relative;background:url('/dungeon-bg.png') no-repeat;background-size:100% 100%;border-radius:10px;overflow:hidden">
+    <div id="arena-scene" style="width:100%;height:200px;position:relative;background:url('/dungeon-bg.png') center/cover no-repeat;border-radius:10px;overflow:hidden">
       <svg width="100%" height="100%" viewBox="0 0 600 200" style="position:absolute;top:0;left:0;pointer-events:none">
         <defs><radialGradient id="floorGrad" cx="50%" cy="100%" r="80%"><stop offset="0%" stop-color="#000" stop-opacity=".35"/><stop offset="100%" stop-color="#000" stop-opacity="0"/></radialGradient></defs>
         <rect y="130" width="600" height="70" fill="url(#floorGrad)"/>

@@ -866,7 +866,7 @@ function startGame(cls){
   const c=CLS[cls];
   const titles={rogue:'Shadowblade',mage:'Archmage',paladin:'Lightbringer',archer:'Wanderer'};
   G={cls,charName:c.n+' the '+titles[cls],
-    level:1,xp:0,xpNext:1000000,gold:80,str:c.str,dex:c.dex,int:c.int,con:c.con,wis:c.wis,cha:c.cha,
+    level:1,xp:0,xpNext:500000,gold:80,str:c.str,dex:c.dex,int:c.int,con:c.con,wis:c.wis,cha:c.cha,
     maxHp:c.hp,hp:c.hp,maxMana:c.mana,mana:c.mana,crit:c.crit,baseDmg:[...c.dmg],baseAC:c.ac,atkBonus:c.atk,
     equip:{head:null,chest:null,hands:null,feet:null,weapon:null,offhand:null,ring:null,neck:null},
     bag:[],vault:[],inCombat:false,enemy:null,step:0,clears:0,bosses:0,totalGold:80,killed:0,
@@ -892,7 +892,9 @@ function confirmNewGame(){
 // ═══════════════════════════════════════
 function doPrestige(){
   if(!G||G.level<50){push('Requires level 50!');return;}
-  if(!confirm('Prestige? You will reset to level 1 but keep your Vault and gain permanent bonuses.'))return;
+  if((G.gold||0)<10000){push('Prestige requires 10,000g!');return;}
+  if(!confirm('Prestige? Costs 10,000g. You will reset to level 1 but keep your Vault and gain permanent bonuses.'))return;
+  G.gold-=10000;
   clearTimeout(cTimer);G.inCombat=false;G.enemy=null;paused=false;
   G.prestige=(G.prestige||0)+1;
   // Permanent bonus per prestige
@@ -903,7 +905,7 @@ function doPrestige(){
   // Reset but keep vault & gold (30%)
   const savedVault=[...G.vault];const savedGold=Math.floor(G.gold*.3);
   const c=CLS[G.cls];const pb=G.prestigeBonus;
-  G.level=1;G.xp=0;G.xpNext=1000000;G.gold=savedGold+200;
+  G.level=1;G.xp=0;G.xpNext=500000;G.gold=savedGold+200;
   G.str=c.str+pb.str;G.dex=c.dex+pb.dex;G.int=c.int+pb.int;
   G.con=c.con+pb.con;G.wis=c.wis+pb.wis;G.cha=c.cha+pb.cha;
   G.maxHp=c.hp+pb.hp;G.hp=G.maxHp;G.maxMana=c.mana+pb.mana;G.mana=G.maxMana;
@@ -1302,6 +1304,14 @@ function combatTick(){
     addStatus('hero','regen',1,{icon:'✨',label:'Regen',cls:'sfx-regen'});
   }
 
+  // Auto-potion: use best available potion when HP drops below 35%
+  if(G.autoPotion&&potCD<=0&&G.hp/G.maxHp<0.35){
+    if((G.potions?.hp_l||0)>0)usePotion('hp_l');
+    else if((G.potions?.hp_s||0)>0)usePotion('hp_s');
+  }
+  renderHeroBars();
+  if(G.hp<=0){heroDied();return;}
+
   // Mage mana burn
   if(G.cls==='mage'&&G.mana>=10){
     const bDmg=Math.floor(G.int*.3+G.level*.2);G.enemy.hp-=bDmg;G.mana-=3;
@@ -1314,14 +1324,6 @@ function combatTick(){
     const pDmg=Math.floor(G.dex*.2+G.level*.3);G.enemy.hp-=pDmg;
     logMsg('☠ Poison: '+pDmg+' dmg','info');updateEnemyBars();if(G.enemy.hp<=0){enemyDied();return;}
   }
-
-  // Auto-potion: use best available potion when HP drops below 35%
-  if(G.autoPotion&&potCD<=0&&G.hp/G.maxHp<0.35){
-    if((G.potions?.hp_l||0)>0)usePotion('hp_l');
-    else if((G.potions?.hp_s||0)>0)usePotion('hp_s');
-  }
-  renderHeroBars();
-  if(G.hp<=0){heroDied();return;}
   if(!paused)cTimer=setTimeout(combatTick,tickDelay());
 }
 
@@ -1421,7 +1423,7 @@ function toggleAutoRetry(){
 }
 
 function levelUp(){
-  G.xp-=G.xpNext;G.level++;G.xpNext=1000000;
+  G.xp-=G.xpNext;G.level++;G.xpNext=500000;
   const _hpCap={rogue:12,mage:10,paladin:18,archer:13}[G.cls]||12;
   const hg=Math.min(_hpCap,Math.floor(7+G.con*.45+Math.random()*4+1));
   const mg=Math.floor(5+G.wis*.4+Math.random()*4);

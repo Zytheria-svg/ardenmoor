@@ -137,7 +137,9 @@ export default function Home() {
         <div style="height:1px;background:var(--bord3)"></div>
         <div><span style="color:var(--green3);font-family:var(--font-d)">🎉 LEVEL 50</span><br/>Reaching level 50 now triggers a special congratulations message.</div>
         <div style="height:1px;background:var(--bord3)"></div>
-        <div><span style="color:var(--red3);font-family:var(--font-d)">⚖ XP REWORK</span><br/>Flat 1,000,000 XP per level. Enemies now give fixed XP: Normal 2,000 · Elite 4,000 · Boss 12,000. Previous dungeons give 10× less XP each time a new dungeon is unlocked.</div>
+        <div><span style="color:var(--red3);font-family:var(--font-d)">⚖ XP REWORK</span><br/>Flat 500,000 XP per level. Enemies now give fixed XP: Normal 2,000 · Elite 4,000 · Boss 12,000. Previous dungeons give 10× less XP each time a new dungeon is unlocked.</div>
+        <div style="height:1px;background:var(--bord3)"></div>
+        <div><span style="color:var(--gold2);font-family:var(--font-d)">⭐ PRESTIGE COST</span><br/>Prestige now costs 10,000g per reset.</div>
       </div>
     </div>
     <div style="margin-top:12px;padding:10px 14px;background:rgba(40,30,120,.25);border:1px solid var(--purple2);border-radius:9px;text-align:left">

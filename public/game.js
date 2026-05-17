@@ -494,7 +494,7 @@ function heroSVG(cls,w,h){
     archer:'/hero-archer.png'
   };
   const src=HERO_IMGS[cls]||HERO_IMGS.rogue;
-  return `<img src="${src}" width="${w}" height="${h}" onload="_rmBlk(this)" style="object-fit:contain;image-rendering:auto;filter:drop-shadow(0 2px 8px rgba(0,0,0,.8))" />`;
+  return `<img src="${src}" width="${w}" height="${h}" style="object-fit:contain;image-rendering:auto;filter:drop-shadow(0 2px 8px rgba(0,0,0,.8))" />`;
 }
 
 function enemySVG(name,w,h){
@@ -2000,6 +2000,7 @@ document.addEventListener('keydown',e=>{
   else if(k==='q')useAbility(0);else if(k==='w')useAbility(1);else if(k==='e')useAbility(2);
   else if(k==='s'&&!G.inCombat&&document.getElementById('t-battle').classList.contains('on'))enterDungeon();
 });
+
 
 
 

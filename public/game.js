@@ -967,7 +967,7 @@ function renderHeroBars(){
 
 function updateHeroVisuals(){
   if(!G)return;
-  const s=heroSVG(G.cls,60,80);
+  const s=heroSVG(G.cls,90,150);
   const big=document.getElementById('hero-svg-big');if(big)big.outerHTML=s.replace('<svg ','<svg id="hero-svg-big" ');
   const mini=document.getElementById('b-hero-svg');if(mini)mini.innerHTML=heroSVG(G.cls,46,54);
   const top=document.getElementById('hero-top-svg');if(top)top.innerHTML=heroSVG(G.cls,26,26);
@@ -1981,6 +1981,7 @@ document.addEventListener('keydown',e=>{
   else if(k==='q')useAbility(0);else if(k==='w')useAbility(1);else if(k==='e')useAbility(2);
   else if(k==='s'&&!G.inCombat&&document.getElementById('t-battle').classList.contains('on'))enterDungeon();
 });
+
 
 
 

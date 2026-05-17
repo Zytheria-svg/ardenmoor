@@ -135,9 +135,9 @@ img[src^="data:image/png"]{
 
 /* ── BATTLE ── */
 .battle-arena{background:#0c0f18;border:1px solid var(--bord);border-radius:12px;overflow:hidden}
-.fighter{position:absolute;bottom:38px;display:flex;flex-direction:column;align-items:center;isolation:isolate}
+.fighter{position:absolute;bottom:38px;display:flex;flex-direction:column;align-items:center;mix-blend-mode:screen}
 .fighter svg{filter:drop-shadow(0 3px 8px rgba(0,0,0,.8))}
-.fighter img{mix-blend-mode:screen;filter:drop-shadow(0 3px 8px rgba(0,0,0,.8))}
+.fighter img{filter:drop-shadow(0 3px 8px rgba(0,0,0,.8))}
 .hit-flash{animation:hitFlash .3s ease}
 @keyframes hitFlash{0%{filter:drop-shadow(0 0 10px #ff4040)}50%{opacity:.25;filter:none}100%{opacity:1}}
 .crit-flash{animation:critFlash .35s ease}

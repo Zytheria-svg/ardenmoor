@@ -1040,13 +1040,21 @@ function renderAbPanel(){
 // ═══════════════════════════════════════
 // DUNGEON LOGIC
 // ═══════════════════════════════════════
-function setDungeon(i){G.activeDungeon=i;G.step=0;renderDungeonList();renderPips();push('Dungeon: '+DUNGEONS[i].n);}
+function setDungeon(i){G.activeDungeon=i;G.step=0;renderDungeonList();renderPips();push('Dungeon: '+DUNGEONS[i].n);setArenaBg(null);}
+
+function setArenaBg(idx){
+  const el=document.getElementById('arena-scene');
+  if(!el)return;
+  const bg=idx!=null?`url('/bg-${idx+1}.png')`:`url('/dungeon-bg.png')`;
+  el.style.background=bg+' center/cover no-repeat';
+}
 
 function enterDungeon(){
   if(G.inCombat)return;
   document.getElementById('btn-enter').style.display='none';
   document.getElementById('btn-pause').style.display='block';
   document.getElementById('enc-banner').style.display='none';
+  setArenaBg(G.activeDungeon);
   G.inCombat=true;G.step=0;heroStatus={};enemyStatus={};spawnNext();cTimer=setTimeout(combatTick,tickDelay());
 }
 

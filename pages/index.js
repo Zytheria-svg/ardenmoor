@@ -249,21 +249,12 @@ export default function Home() {
 </div>
 <div>
   <div class="battle-arena" style="margin-bottom:9px">
-    <div id="arena-scene" style="width:100%;height:200px;position:relative">
+    <div id="arena-scene" style="width:100%;height:200px;position:relative;background:url('/dungeon-bg.png') center/cover no-repeat;border-radius:10px;overflow:hidden">
       <svg width="100%" height="100%" viewBox="0 0 600 200" style="position:absolute;top:0;left:0">
-        <defs><radialGradient id="floorGrad" cx="50%" cy="100%" r="80%"><stop offset="0%" stop-color="#1a1e2e" stop-opacity=".6"/><stop offset="100%" stop-color="#050608" stop-opacity="0"/></radialGradient></defs>
-        <rect width="600" height="200" fill="#0c0f18"/>
-        <rect y="115" width="600" height="85" fill="#0a0c12"/>
-        <rect y="158" width="600" height="3" fill="#1a1d2e"/>
-        <circle cx="536" cy="30" r="18" fill="#0a0c12"/><circle cx="544" cy="24" r="16" fill="#161928"/>
-        <circle cx="42" cy="16" r=".9" fill="#303560"/><circle cx="108" cy="30" r="1.1" fill="#303560"/><circle cx="188" cy="12" r=".7" fill="#303560"/><circle cx="278" cy="26" r=".9" fill="#5245c2" opacity=".5"/><circle cx="374" cy="9" r="1.1" fill="#303560"/><circle cx="472" cy="20" r=".7" fill="#303560"/>
+        <defs><radialGradient id="floorGrad" cx="50%" cy="100%" r="80%"><stop offset="0%" stop-color="#000" stop-opacity=".5"/><stop offset="100%" stop-color="#000" stop-opacity="0"/></radialGradient></defs>
         <rect y="120" width="600" height="80" fill="url(#floorGrad)"/>
-        <ellipse cx="126" cy="163" rx="52" ry="7" fill="#0f1219" stroke="#1a1d2e" stroke-width="1"/>
-        <ellipse cx="474" cy="157" rx="52" ry="7" fill="#0f1219" stroke="#1a1d2e" stroke-width="1"/>
-        <rect x="17" y="110" width="3" height="24" fill="#3e2204"/><ellipse cx="18.5" cy="108" rx="4" ry="6" fill="#d89428" opacity=".9"/>
-        <rect x="580" y="110" width="3" height="24" fill="#3e2204"/><ellipse cx="581.5" cy="108" rx="4" ry="6" fill="#d89428" opacity=".9"/>
-        <rect x="236" y="74" width="9" height="80" fill="#0f1219" stroke="#1a1d2e" stroke-width="1"/><rect x="355" y="74" width="9" height="80" fill="#0f1219" stroke="#1a1d2e" stroke-width="1"/>
-        <rect x="231" y="70" width="19" height="9" fill="#151820" stroke="#1a1d2e" stroke-width="1"/><rect x="350" y="70" width="19" height="9" fill="#151820" stroke="#1a1d2e" stroke-width="1"/>
+        <ellipse cx="126" cy="163" rx="52" ry="7" fill="#000" fill-opacity=".5"/>
+        <ellipse cx="474" cy="157" rx="52" ry="7" fill="#000" fill-opacity=".5"/>
       </svg>
       <div class="fighter" style="left:86px;bottom:37px" id="hero-fighter"><svg id="hero-svg-big" width="60" height="80" viewBox="0 0 60 80"></svg></div>
       <div class="fighter" style="right:86px;bottom:37px" id="enemy-fighter"><svg id="enemy-svg-big" width="60" height="80" viewBox="0 0 60 80"></svg></div>

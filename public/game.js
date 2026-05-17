@@ -1047,8 +1047,8 @@ function setArenaBg(idx){
   if(!el)return;
   const file=idx!=null?`/bg-${idx+1}.png`:`/dungeon-bg.png`;
   el.style.backgroundImage=`url('${file}')`;
-  el.style.backgroundSize='cover';
-  el.style.backgroundPosition='center bottom';
+  el.style.backgroundSize='100% 100%';
+  el.style.backgroundPosition='center center';
   el.style.backgroundRepeat='no-repeat';
 }
 

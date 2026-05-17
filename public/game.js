@@ -1046,10 +1046,27 @@ function setArenaBg(idx){
   const el=document.getElementById('arena-scene');
   if(!el)return;
   const file=idx!=null?`/bg-${idx+1}.png`:`/dungeon-bg.png`;
-  el.style.backgroundImage=`url('${file}')`;
-  el.style.backgroundSize='100% 100%';
-  el.style.backgroundPosition='center center';
-  el.style.backgroundRepeat='no-repeat';
+  const filters=[
+    'contrast(1.25) saturate(1.4) brightness(1.05)',  // 1 Goblin Warrens
+    'contrast(1.3) saturate(1.5) brightness(0.95)',   // 2 Crypt of Whispers
+    'contrast(1.2) saturate(1.6) brightness(1.1)',    // 3 Fungal Depths
+    'contrast(1.35) saturate(1.5) brightness(1.05)',  // 4 Infernal Citadel
+    'contrast(1.3) saturate(1.4) brightness(1.0)',    // 5 Sunken Necropolis
+    'contrast(1.4) saturate(1.6) brightness(0.95)',   // 6 Void Sanctum
+  ];
+  let bg=document.getElementById('arena-bg-layer');
+  if(!bg){
+    bg=document.createElement('div');
+    bg.id='arena-bg-layer';
+    bg.style.cssText='position:absolute;inset:0;z-index:0;';
+    el.insertBefore(bg,el.firstChild);
+  }
+  bg.style.backgroundImage=`url('${file}')`;
+  bg.style.backgroundSize='100% 100%';
+  bg.style.backgroundPosition='center center';
+  bg.style.backgroundRepeat='no-repeat';
+  bg.style.filter=idx!=null?filters[idx]:'contrast(1.2) saturate(1.3) brightness(1.0)';
+  el.style.backgroundImage='none';
 }
 
 function enterDungeon(){

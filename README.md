@@ -31,17 +31,6 @@ Expanded from 6 to **10 dungeons**. Four new dungeons added, all unlock levels r
 
 ---
 
-### 🎨 Battle Arena Backgrounds
-Each dungeon now has its own atmospheric background image that previews when you select a dungeon. New hand-crafted hero sprites for all 4 classes replace the old procedural SVGs.
-
-| Class | Sprite |
-|---|---|
-| 🗡 Rogue | Elf rogue with daggers and fur-lined cloak |
-| 🔮 Mage | Raven mage with constellation robes and wings |
-| 🛡 Paladin | Antlered knight with gold armor and shield |
-| 🏹 Archer | Dark elf archer with longbow and quiver |
-
----
 
 ### ⭐ XP Draught Potion
 New potion in the shop — doubles all XP gained for **10 turns**. Price: **1,000g**.

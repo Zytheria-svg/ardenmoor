@@ -479,7 +479,7 @@ function _rmBlk(el){
     x.drawImage(i,0,0);
     var d=x.getImageData(0,0,c.width,c.height),p=d.data;
     for(var j=0;j<p.length;j+=4){
-      if(p[j]<50&&p[j+1]<50&&p[j+2]<50)p[j+3]=0;
+      if(p[j]<20&&p[j+1]<20&&p[j+2]<20)p[j+3]=0;
     }
     x.putImageData(d,0,0);
     el.src=c.toDataURL();
@@ -2000,6 +2000,7 @@ document.addEventListener('keydown',e=>{
   else if(k==='q')useAbility(0);else if(k==='w')useAbility(1);else if(k==='e')useAbility(2);
   else if(k==='s'&&!G.inCombat&&document.getElementById('t-battle').classList.contains('on'))enterDungeon();
 });
+
 
 
 

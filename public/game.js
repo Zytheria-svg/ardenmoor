@@ -1065,7 +1065,7 @@ function setArenaBg(idx){
   bg.style.backgroundSize='100% 100%';
   bg.style.backgroundPosition='center center';
   bg.style.backgroundRepeat='no-repeat';
-  bg.style.filter=idx!=null?filters[idx]:'contrast(1.2) saturate(1.3) brightness(1.0)';
+  bg.style.filter=idx!=null?filters[idx]:'contrast(1.1) saturate(1.3) brightness(1.4)';
   el.style.backgroundImage='none';
 }
 

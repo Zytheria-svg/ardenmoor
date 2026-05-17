@@ -1040,13 +1040,16 @@ function renderAbPanel(){
 // ═══════════════════════════════════════
 // DUNGEON LOGIC
 // ═══════════════════════════════════════
-function setDungeon(i){G.activeDungeon=i;G.step=0;renderDungeonList();renderPips();push('Dungeon: '+DUNGEONS[i].n);setArenaBg(null);}
+function setDungeon(i){G.activeDungeon=i;G.step=0;renderDungeonList();renderPips();push('Dungeon: '+DUNGEONS[i].n);setArenaBg(i);}
 
 function setArenaBg(idx){
   const el=document.getElementById('arena-scene');
   if(!el)return;
-  const bg=idx!=null?`url('/bg-${idx+1}.png')`:`url('/dungeon-bg.png')`;
-  el.style.background=bg+' center/cover no-repeat';
+  const file=idx!=null?`/bg-${idx+1}.png`:`/dungeon-bg.png`;
+  el.style.backgroundImage=`url('${file}')`;
+  el.style.backgroundSize='cover';
+  el.style.backgroundPosition='center bottom';
+  el.style.backgroundRepeat='no-repeat';
 }
 
 function enterDungeon(){

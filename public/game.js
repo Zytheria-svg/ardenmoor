@@ -1047,12 +1047,12 @@ function setArenaBg(idx){
   if(!el)return;
   const file=idx!=null?`/bg-${idx+1}.png`:`/dungeon-bg.png`;
   const filters=[
-    'contrast(1.25) saturate(1.4) brightness(1.05)',  // 1 Goblin Warrens
-    'contrast(1.3) saturate(1.5) brightness(0.95)',   // 2 Crypt of Whispers
-    'contrast(1.2) saturate(1.6) brightness(1.1)',    // 3 Fungal Depths
-    'contrast(1.35) saturate(1.5) brightness(1.05)',  // 4 Infernal Citadel
-    'contrast(1.3) saturate(1.4) brightness(1.0)',    // 5 Sunken Necropolis
-    'contrast(1.4) saturate(1.6) brightness(0.95)',   // 6 Void Sanctum
+    'contrast(1.1) saturate(1.3) brightness(1.4)',  // 1 Goblin Warrens
+    'contrast(1.1) saturate(1.3) brightness(1.4)',  // 2 Crypt of Whispers
+    'contrast(1.1) saturate(1.3) brightness(1.4)',  // 3 Fungal Depths
+    'contrast(1.1) saturate(1.3) brightness(1.4)',  // 4 Infernal Citadel
+    'contrast(1.1) saturate(1.3) brightness(1.4)',  // 5 Sunken Necropolis
+    'contrast(1.1) saturate(1.3) brightness(1.4)',  // 6 Void Sanctum
   ];
   let bg=document.getElementById('arena-bg-layer');
   if(!bg){

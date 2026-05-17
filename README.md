@@ -1,8 +1,75 @@
-# ⚔ Ardenmoor
+# ⚔ Hexo Idle
 
 **Souls · Idle · D&D** — A browser-based hybrid RPG.
 
 🎮 **[Play Now → ardenmoor.vercel.app](https://ardenmoor.vercel.app)**
+
+---
+
+## 📋 Patch Notes — v13.0
+
+### 🎮 Game Renamed — Hexo Idle
+Ardenmoor is now **Hexo Idle**. Title screen, browser tab, and all in-game references updated.
+
+---
+
+### 🗺 10 Dungeons
+Expanded from 6 to **10 dungeons**. Four new dungeons added, all unlock levels rebalanced to +5 per tier:
+
+| # | Name | Min Level |
+|---|---|---|
+| 1 | 🕳️ Goblin Warrens | 1 |
+| 2 | ⚰️ Crypt of Whispers | 6 |
+| 3 | 🍄 Fungal Depths | 11 |
+| 4 | 🔥 Infernal Citadel | 16 |
+| 5 | 🌊 Sunken Necropolis | 21 |
+| 6 | 🌋 Ashen Wastes | 26 |
+| 7 | 💎 Crystal Catacombs | 31 |
+| 8 | 🌑 Shadow Citadel | 36 |
+| 9 | 🕳 Abyssal Maw | 41 |
+| 10 | 🌌 Void Sanctum | 46 |
+
+---
+
+### 🎨 Battle Arena Backgrounds
+Each dungeon now has its own atmospheric background image that previews when you select a dungeon. New hand-crafted hero sprites for all 4 classes replace the old procedural SVGs.
+
+| Class | Sprite |
+|---|---|
+| 🗡 Rogue | Elf rogue with daggers and fur-lined cloak |
+| 🔮 Mage | Raven mage with constellation robes and wings |
+| 🛡 Paladin | Antlered knight with gold armor and shield |
+| 🏹 Archer | Dark elf archer with longbow and quiver |
+
+---
+
+### ⭐ XP Draught Potion
+New potion in the shop — doubles all XP gained for **10 turns**. Price: **1,000g**.
+
+---
+
+### 🗄 Vault Expanded
+Vault storage increased from 80 → **100 slots**.
+
+---
+
+### 🎉 Level 50 — Run Complete
+Reaching level 50 now displays a special congratulations message.
+
+---
+
+### ⚖ Balance Changes — XP Rework
+
+**Flat 1,000,000 XP per level** (no curve).
+
+**Standardized enemy XP:**
+| Enemy Type | XP |
+|---|---|
+| Normal | 2,000 |
+| Elite | 4,000 |
+| Boss | 12,000 |
+
+**Dungeon XP scaling:** When a new dungeon unlocks, all previous dungeons give 10× less XP — encouraging progression while keeping earlier dungeons farmable early on.
 
 ---
 
@@ -23,64 +90,32 @@ Using any ability puts **all abilities on shared cooldown**.
 ---
 
 ### 🔧 Bug Fixes
-- Auto-equip now respects class weapon restrictions (Rogues can't wield Staves, etc.)
+- Auto-equip now respects class weapon restrictions
 - Shop-bought items are never auto-sold
 - Archer Barrage no longer lets dead enemies counterattack
-- Potion mass-buy now shows total cost (e.g. ×5 (200g))
-
----
-
-### 🎯 Rarity Rename
-Cleaner tier names across the entire game:
-
-| Old | New |
-|---|---|
-| Common | Common |
-| Uncommon | Rare |
-| Rare | Epic |
-| Epic | Legendary |
-| Legendary | Mythic ✦ |
+- Potion mass-buy now shows total cost
 
 ---
 
 ### ✦ Gear Bonus System
-Every item now rolls **1 random bonus stat** on drop:
-
-| Stat | Effect |
-|---|---|
-| %DmgRdc | Reduces incoming damage |
-| %AtkSpd | Increases attack speed |
-| %DgCh | Dodge chance bonus |
-| %HlthRgn | Health regeneration |
-| %CrDmg | Critical damage multiplier |
-| %Chaos | Random bonus effects |
-
-Magnitude scales with rarity: Common +1% → Mythic +1–4%.
+Every item rolls **1 random bonus stat** on drop. Magnitude scales with rarity: Common +1% → Mythic +1–4%.
 
 ---
 
 ### ⚡ 5× Combat Speed
-New **5× speed** button in the top bar and settings panel.  
-Archer Barrage upgraded from 5 arrows → **10 arrows**.
+New **5× speed** button. Archer Barrage upgraded from 5 → **10 arrows**.
 
 ---
 
 ### 💊 Auto-Potion
-Toggle in the Battle tab — automatically uses your best healing potion when HP drops below **35%**.
-
----
-
-### 🛒 Shop Comparison
-Shop items now show **stat deltas** vs your currently equipped gear in the same slot (green = upgrade, red = downgrade).
+Automatically uses your best healing potion when HP drops below **35%**.
 
 ---
 
 ### ⚖ Balance Changes
-- Boss HP scaling reduced: capped at 20 runs, scaling rates halved
-- XP formula: kill multiplier reduced (×1.5 → ×0.9), level curve steepened (1.22 → 1.30 exponent)
+- Boss HP scaling capped at 20 runs, rates halved
+- XP kill multiplier reduced, level curve steepened
 - Drop rates increased (base 6% → 8%, elite 25% → 28%)
-- Cloud saves now auto-browse when opening the Settings panel
-- Hemorrhage nerfed: 8% → 4% per tick, 6 → 4 turns, CD 12 → 14
 
 ---
 
@@ -95,21 +130,8 @@ Shop items now show **stat deltas** vs your currently equipped gear in the same 
 
 ---
 
-## 🗺 Dungeons
-
-| # | Name | Min Level |
-|---|---|---|
-| 1 | 🕳️ Goblin Warrens | 1 |
-| 2 | ⚰️ Crypt of Whispers | 6 |
-| 3 | 🍄 Fungal Depths | 13 |
-| 4 | 🔥 Infernal Citadel | 22 |
-| 5 | 🌊 Sunken Necropolis | 32 |
-| 6 | 🌌 Void Sanctum | 45 |
-
----
-
 ## ☁ Cloud Saves
-Saves are stored per-device via Supabase. Your saves are private — other players cannot see them. Optional PIN protection available.
+Saves are stored per-device via Supabase. Optional PIN protection available.
 
 ---
 

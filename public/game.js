@@ -984,18 +984,18 @@ function setEnemyVisual(en){
 }
 
 // Clickable region bounds on world-map.png [x1%,y1%,x2%,y2%]
-// Top row: D1-D4 · Bottom row: D5-D10
+// Zones sit over the name labels at the bottom of each dungeon cell
 const DNG_BOUNDS=[
-  [0,10,25,52],  // 1 Goblin Warrens
-  [25,10,45,52], // 2 Crypt of Whispers
-  [45,10,65,52], // 3 Fungal Depths
-  [65,10,100,52],// 4 Infernal Citadel
-  [0,52,18,95],  // 5 Sunken Necropolis
-  [18,52,33,95], // 6 Ashen Wastes
-  [33,52,50,95], // 7 Crystal Catacombs
-  [50,52,67,95], // 8 Shadow Citadel
-  [67,52,83,95], // 9 Abyssal Maw
-  [83,52,100,95] // 10 Void Sanctum
+  [1,44,23,54],  // 1 Goblin Warrens
+  [23,44,44,54], // 2 Crypt of Whispers
+  [44,42,64,52], // 3 Fungal Depths
+  [64,40,99,50], // 4 Infernal Citadel
+  [1,86,17,94],  // 5 Sunken Necropolis
+  [17,86,33,94], // 6 Ashen Wastes
+  [33,86,50,94], // 7 Crystal Catacombs
+  [50,86,67,94], // 8 Shadow Citadel
+  [67,86,83,94], // 9 Abyssal Maw
+  [83,86,99,94]  // 10 Void Sanctum
 ];
 
 // Glow color per dungeon
@@ -1035,13 +1035,13 @@ function renderDungeonList(){
       box-sizing:border-box;transition:box-shadow .15s;
       ${sel?`box-shadow:inset 0 0 0 2px ${col},inset 0 0 24px ${col}44`:''}`;
 
-    // Locked overlay
+    // Locked overlay — dim the name zone and show lock
     if(locked){
       const lk=document.createElement('div');
-      lk.style.cssText=`position:absolute;inset:0;background:rgba(0,0,0,.55);
-        display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
-        padding-bottom:8px;pointer-events:none`;
-      lk.innerHTML=`<span style="font-size:18px">🔒</span>
+      lk.style.cssText=`position:absolute;inset:0;background:rgba(0,0,0,.65);
+        display:flex;align-items:center;justify-content:center;gap:4px;pointer-events:none;
+        border-radius:3px`;
+      lk.innerHTML=`<span style="font-size:11px">🔒</span>
         <span style="font-size:8px;color:#aaa;font-family:var(--font-d)">Lv ${d.minLvl}</span>`;
       zone.appendChild(lk);
     }

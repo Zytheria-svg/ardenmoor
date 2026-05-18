@@ -269,8 +269,8 @@ export default function Home() {
   </div>
   <!-- DUNGEON MAP -->
   <div style="margin-top:9px">
-    <div id="dng-list" style="position:relative;width:100%;height:460px;border-radius:10px;border:1px solid var(--bord2);overflow:hidden;background:#07090f">
-      <div style="position:absolute;inset:0;z-index:0;background:url('/world-map.png') center/cover no-repeat"></div>
+    <div id="dng-list" style="position:relative;width:100%;border-radius:10px;border:1px solid var(--bord2);overflow:hidden;background:#07090f">
+      <img src="/world-map.png" alt="" draggable="false" style="width:100%;display:block;user-select:none">
       <div id="dng-map-nodes" style="position:absolute;inset:0;z-index:2"></div>
     </div>
   </div>

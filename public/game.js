@@ -999,15 +999,11 @@ const DNG_TERRAIN=[
 ];
 
 function renderDungeonList(){
-  const svg=document.getElementById('dng-map-svg');
   const nodesDiv=document.getElementById('dng-map-nodes');
-  if(!svg||!nodesDiv)return;
-  svg.innerHTML='';nodesDiv.innerHTML='';
+  if(!nodesDiv)return;
+  nodesDiv.innerHTML='';
 
-  // Remove any existing tooltip
-  const oldTip=document.getElementById('dng-map-tooltip');if(oldTip)oldTip.remove();
-
-  // Build shared tooltip element
+  // Shared tooltip
   const tooltip=document.createElement('div');
   tooltip.id='dng-map-tooltip';
   tooltip.style.cssText=`position:absolute;z-index:99;display:none;

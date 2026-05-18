@@ -983,24 +983,106 @@ function setEnemyVisual(en){
   updateEnemyBars();
 }
 
+// Dungeon node positions on the world map [x%, y%]
+const DNG_POS=[
+  [18,82],[50,88],[82,75],  // D1 D2 D3
+  [88,55],[65,40],[35,40],  // D4 D5 D6
+  [12,55],[20,28],[55,18],  // D7 D8 D9
+  [82,12]                   // D10
+];
+
 function renderDungeonList(){
-  const div=document.getElementById('dng-list');if(!div)return;div.innerHTML='';
+  const svg=document.getElementById('dng-map-svg');
+  const nodesDiv=document.getElementById('dng-map-nodes');
+  if(!svg||!nodesDiv)return;
+  svg.innerHTML='';nodesDiv.innerHTML='';
+
+  // Draw connecting path lines
+  for(let i=0;i<DUNGEONS.length-1;i++){
+    const [x1,y1]=DNG_POS[i],[x2,y2]=DNG_POS[i+1];
+    const locked=G.level<DUNGEONS[i+1].minLvl;
+    const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',x1+'%');line.setAttribute('y1',y1+'%');
+    line.setAttribute('x2',x2+'%');line.setAttribute('y2',y2+'%');
+    line.setAttribute('stroke',locked?'#1a1a2a':'#3a3060');
+    line.setAttribute('stroke-width','2');
+    line.setAttribute('stroke-dasharray',locked?'4,4':'none');
+    svg.appendChild(line);
+  }
+
+  // Draw dungeon nodes
   DUNGEONS.forEach((d,i)=>{
-    const locked=G.level<d.minLvl,sel=G.activeDungeon===i;
+    const [xp,yp]=DNG_POS[i];
+    const locked=G.level<d.minLvl;
+    const sel=G.activeDungeon===i;
     const runs=(G.dungeonRuns||[])[i]||0;
-    const dc=document.createElement('div');dc.className='dng-card'+(locked?' locked':'')+(sel?' sel':'');
-    dc.innerHTML=`<div style="display:flex;align-items:center;gap:12px">
-      <div style="font-size:28px;flex-shrink:0">${d.em}</div>
-      <div style="flex:1">
-        <div style="font-weight:700;font-size:13px;font-family:var(--font-d);color:${sel?'var(--red3)':d.col}">${d.n}${sel?'<span style="font-size:8.5px;letter-spacing:.5px;margin-left:5px">● ACTIVE</span>':''}</div>
-        <div style="font-size:11px;color:var(--txt3);font-style:italic;margin:2px 0">${d.desc}</div>
-        <div style="font-size:9.5px;color:var(--txt3);font-family:var(--font-m)">Min LVL ${d.minLvl} · XP ×${d.xm} · Gold ×${d.gm} · Boss: ${d.boss.n}</div>
-        ${(()=>{const er=[0.15,0.20,0.27,0.35,0.44,0.55,0.62,0.69,0.76,0.83][i]||0.15;const br=[0.30,0.38,0.48,0.58,0.70,0.85,0.92,0.98,1.05,1.12][i]||0.30;const rr=[0.08,0.10,0.13,0.16,0.20,0.25,0.28,0.31,0.34,0.38][i]||0.08;const bossP=runs>0?Math.round(Math.pow(1+br,runs)*100):100;const p2pct=Math.round(Math.min(0.50+runs*0.07,0.82)*100);const dsTag=runs>=3?' <b style="color:var(--red3)">⚡DS</b>':'';return runs>0?`<div style="font-size:9px;color:var(--amber3);font-family:var(--font-m);margin-top:3px">⚔ Run ${runs+1} &nbsp;·&nbsp; Enemies <b>${Math.round((1+runs*er)*100)}%</b> &nbsp;·&nbsp; Boss <b>${bossP}%</b> · P2@${p2pct}%${dsTag} &nbsp;·&nbsp; Rewards <b style="color:var(--green3)">${Math.round((1+runs*rr)*100)}%</b></div><div style="font-size:8.5px;color:var(--txt3);font-family:var(--font-m);margin-top:1px">Boss scales exponentially ×${Math.round((1+br)*10)/10} per run · ⚡Double Strike unlocks run 3</div>`:`<div style="font-size:8.5px;color:var(--txt3);font-family:var(--font-m);margin-top:2px">Each clear: +${Math.round(er*100)}% enemy · ×${Math.round((1+br)*10)/10} boss (compound) · +${Math.round(rr*100)}% reward</div>`;})()}
-      </div>
-      ${!locked?`<button class="btn" style="font-size:10.5px;padding:4px 9px;flex-shrink:0" onclick="setDungeon(${i})">${sel?'✓ Active':'Select'}</button>`:`<span style="font-size:11px;color:var(--txt3);flex-shrink:0">🔒 LVL ${d.minLvl}</span>`}
-    </div>`;
-    div.appendChild(dc);
+
+    const node=document.createElement('div');
+    node.style.cssText=`position:absolute;left:${xp}%;top:${yp}%;transform:translate(-50%,-50%);
+      display:flex;flex-direction:column;align-items:center;gap:2px;cursor:${locked?'default':'pointer'};
+      z-index:3;transition:transform .15s`;
+
+    const circle=document.createElement('div');
+    circle.style.cssText=`width:44px;height:44px;border-radius:50%;display:flex;align-items:center;
+      justify-content:center;font-size:20px;border:2px solid ${sel?'var(--gold2)':locked?'#222':'#3a3060'};
+      background:${sel?'rgba(196,144,30,.25)':locked?'rgba(10,10,20,.8)':'rgba(20,14,40,.85)'};
+      box-shadow:${sel?'0 0 12px rgba(196,144,30,.6)':'none'};
+      opacity:${locked?0.4:1};transition:box-shadow .2s`;
+    circle.textContent=locked?'🔒':d.em;
+
+    const label=document.createElement('div');
+    label.style.cssText=`font-size:8.5px;font-family:var(--font-d);color:${sel?'var(--gold2)':locked?'#444':'var(--txt3)'};
+      text-align:center;white-space:nowrap;letter-spacing:.3px;text-shadow:0 1px 3px #000`;
+    label.textContent=locked?'LVL '+d.minLvl:d.n.split(' ').slice(0,2).join(' ');
+
+    if(runs>0&&!locked){
+      const badge=document.createElement('div');
+      badge.style.cssText='font-size:7.5px;color:var(--amber3);font-family:var(--font-m);text-shadow:0 1px 3px #000';
+      badge.textContent='⚔ Run '+(runs+1);
+      node.appendChild(circle);node.appendChild(label);node.appendChild(badge);
+    } else {
+      node.appendChild(circle);node.appendChild(label);
+    }
+
+    if(!locked){
+      node.onmouseenter=()=>{circle.style.boxShadow='0 0 10px '+d.col+'88';node.style.transform='translate(-50%,-50%) scale(1.12)';};
+      node.onmouseleave=()=>{circle.style.boxShadow=sel?'0 0 12px rgba(196,144,30,.6)':'none';node.style.transform='translate(-50%,-50%) scale(1)';};
+      node.onclick=()=>selectDungeonNode(i);
+    }
+    nodesDiv.appendChild(node);
   });
+}
+
+function selectDungeonNode(i){
+  const d=DUNGEONS[i];
+  const locked=G.level<d.minLvl;if(locked)return;
+  setDungeon(i);
+  // Show detail panel
+  const panel=document.getElementById('dng-detail');if(!panel)return;
+  panel.style.display='block';
+  const runs=(G.dungeonRuns||[])[i]||0;
+  const er=[0.15,0.20,0.27,0.35,0.44,0.55,0.62,0.69,0.76,0.83][i]||0.15;
+  const br=[0.30,0.38,0.48,0.58,0.70,0.85,0.92,0.98,1.05,1.12][i]||0.30;
+  const rr=[0.08,0.10,0.13,0.16,0.20,0.25,0.28,0.31,0.34,0.38][i]||0.08;
+  const bossP=runs>0?Math.round(Math.pow(1+br,runs)*100):100;
+  const p2pct=Math.round(Math.min(0.50+runs*0.07,0.82)*100);
+  const dsTag=runs>=3?' · <b style="color:var(--red3)">⚡ Double Strike</b>':'';
+  panel.innerHTML=`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+      <span style="font-size:24px">${d.em}</span>
+      <div>
+        <div style="font-family:var(--font-d);font-size:13px;color:${d.col}">${d.n} <span style="font-size:9px;color:var(--green3)">● ACTIVE</span></div>
+        <div style="font-size:10px;color:var(--txt3);font-style:italic">${d.desc}</div>
+      </div>
+    </div>
+    <div style="font-size:9.5px;color:var(--txt3);font-family:var(--font-m);display:flex;gap:14px;flex-wrap:wrap">
+      <span>Min LVL <b style="color:var(--txt)">${d.minLvl}</b></span>
+      <span>Boss <b style="color:var(--txt)">${d.boss.n}</b></span>
+      <span>Run <b style="color:var(--amber3)">${runs+1}</b></span>
+      <span>Enemy <b style="color:var(--red3)">${Math.round((1+runs*er)*100)}%</b></span>
+      <span>Boss <b style="color:var(--red3)">${bossP}%</b> (P2@${p2pct}%)${dsTag}</span>
+      <span>Rewards <b style="color:var(--green3)">${Math.round((1+runs*rr)*100)}%</b></span>
+    </div>`;
 }
 
 function renderPips(){

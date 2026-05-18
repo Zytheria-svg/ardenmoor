@@ -274,8 +274,12 @@ export default function Home() {
 
 <!-- DUNGEON TAB -->
 <div id="t-dungeon" class="tab-c">
-  <div style="font-family:var(--font-d);font-size:10.5px;color:var(--txt3);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">The Dungeons of Hexo Idle</div>
-  <div style="display:flex;flex-direction:column;gap:8px" id="dng-list"></div>
+  <div style="font-family:var(--font-d);font-size:10.5px;color:var(--txt3);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px">World Map — Select a Dungeon</div>
+  <div id="dng-list" style="position:relative;width:100%;height:340px;background:radial-gradient(ellipse at 50% 60%,#0d1a0f 0%,#080c10 70%,#04060a 100%);border-radius:12px;border:1px solid var(--bord2);overflow:hidden">
+    <svg id="dng-map-svg" width="100%" height="100%" style="position:absolute;inset:0;z-index:1"></svg>
+    <div id="dng-map-nodes" style="position:absolute;inset:0;z-index:2"></div>
+  </div>
+  <div id="dng-detail" style="margin-top:10px;padding:10px 14px;background:var(--bg2);border-radius:9px;border:1px solid var(--bord);min-height:64px;display:none"></div>
 </div>
 
 <!-- SHEET TAB -->

@@ -1146,12 +1146,16 @@ function setArenaBg(idx){
   if(!el)return;
   const file=idx!=null?`/bg-${idx+1}.png`:`/dungeon-bg.png`;
   const filters=[
-    'contrast(1.1) saturate(1.3) brightness(1.4)',  // 1 Goblin Warrens
-    'contrast(1.1) saturate(1.3) brightness(1.4)',  // 2 Crypt of Whispers
-    'contrast(1.1) saturate(1.3) brightness(1.4)',  // 3 Fungal Depths
-    'contrast(1.1) saturate(1.3) brightness(1.4)',  // 4 Infernal Citadel
-    'contrast(1.1) saturate(1.3) brightness(1.4)',  // 5 Sunken Necropolis
-    'contrast(1.1) saturate(1.3) brightness(1.4)',  // 6 Void Sanctum
+    'contrast(1.1) saturate(1.4) brightness(1.3)',   // 1 Goblin Warrens — earthy green
+    'contrast(1.2) saturate(0.9) brightness(0.9) hue-rotate(220deg)',  // 2 Crypt of Whispers — cold blue-purple
+    'contrast(1.1) saturate(1.5) brightness(1.1) hue-rotate(40deg)',   // 3 Fungal Depths — sickly yellow-green
+    'contrast(1.2) saturate(1.6) brightness(1.0) hue-rotate(340deg)',  // 4 Infernal Citadel — fiery red-orange
+    'contrast(1.2) saturate(1.3) brightness(0.85) hue-rotate(200deg)', // 5 Sunken Necropolis — deep dark blue
+    'contrast(1.2) saturate(1.5) brightness(1.1) hue-rotate(10deg)',   // 6 Ashen Wastes — scorched orange
+    'contrast(1.2) saturate(1.4) brightness(1.2) hue-rotate(180deg)',  // 7 Crystal Catacombs — icy cyan
+    'contrast(1.3) saturate(0.7) brightness(0.7)',                     // 8 Shadow Citadel — near black
+    'contrast(1.2) saturate(1.2) brightness(0.75) hue-rotate(270deg)', // 9 Abyssal Maw — deep void purple
+    'contrast(1.3) saturate(1.5) brightness(0.8) hue-rotate(250deg)',  // 10 Void Sanctum — cosmic dark blue
   ];
   let bg=document.getElementById('arena-bg-layer');
   if(!bg){

@@ -6,6 +6,13 @@
 
 ---
 
+## 📋 Patch Notes — v13.1
+
+### 🗺 UI Update — Dungeon Selection
+Removed the separate **Dungeon** tab. Dungeon selection is now embedded directly in the main battle screen — the interactive world map sits in the right column below the arena. Click a dungeon nameplate to switch, hover to view stats.
+
+---
+
 ## 📋 Patch Notes — v13.0
 
 ### 🎮 Game Renamed — Hexo Idle

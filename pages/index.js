@@ -275,7 +275,6 @@ export default function Home() {
       <svg id="dng-map-svg" width="100%" height="100%" style="position:absolute;inset:0;z-index:1"></svg>
       <div id="dng-map-nodes" style="position:absolute;inset:0;z-index:2"></div>
     </div>
-    <div id="dng-detail" style="margin-top:6px;padding:8px 12px;background:var(--bg2);border-radius:8px;border:1px solid var(--bord);display:none"></div>
   </div>
 </div>
 </div>

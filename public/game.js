@@ -1004,22 +1004,18 @@ function renderDungeonList(){
   if(!svg||!nodesDiv)return;
   svg.innerHTML='';nodesDiv.innerHTML='';
 
-  // Draw subtle territory blobs via SVG circles (map region feel, no roads)
-  DUNGEONS.forEach((d,i)=>{
-    const [xp,yp]=DNG_POS[i];
-    const locked=G.level<d.minLvl;
-    const sel=G.activeDungeon===i;
-    const col=DNG_TERRAIN[i];
-    // Soft territory glow blob
-    const blob=document.createElementNS('http://www.w3.org/2000/svg','ellipse');
-    blob.setAttribute('cx',xp+'%');blob.setAttribute('cy',yp+'%');
-    blob.setAttribute('rx','9%');blob.setAttribute('ry','10%');
-    blob.setAttribute('fill',col);
-    blob.setAttribute('fill-opacity',locked?'0.04':sel?'0.18':'0.09');
-    svg.appendChild(blob);
-  });
+  // Remove any existing tooltip
+  const oldTip=document.getElementById('dng-map-tooltip');if(oldTip)oldTip.remove();
 
-  // Draw dungeon nodes
+  // Build shared tooltip element
+  const tooltip=document.createElement('div');
+  tooltip.id='dng-map-tooltip';
+  tooltip.style.cssText=`position:absolute;z-index:99;display:none;
+    background:rgba(8,6,20,.97);border:1px solid var(--bord2);border-radius:8px;
+    padding:9px 12px;min-width:200px;max-width:240px;pointer-events:none;
+    box-shadow:0 4px 20px rgba(0,0,0,.7);font-family:var(--font-m)`;
+  nodesDiv.appendChild(tooltip);
+
   DUNGEONS.forEach((d,i)=>{
     const [xp,yp]=DNG_POS[i];
     const locked=G.level<d.minLvl;
@@ -1027,45 +1023,79 @@ function renderDungeonList(){
     const runs=(G.dungeonRuns||[])[i]||0;
     const col=DNG_TERRAIN[i];
 
-    const node=document.createElement('div');
-    node.style.cssText=`position:absolute;left:${xp}%;top:${yp}%;transform:translate(-50%,-50%);
-      display:flex;flex-direction:column;align-items:center;gap:2px;
-      cursor:${locked?'default':'pointer'};z-index:3;transition:transform .15s;user-select:none`;
+    // Nameplate
+    const plate=document.createElement('div');
+    plate.style.cssText=`position:absolute;left:${xp}%;top:${yp}%;transform:translate(-50%,-50%);
+      cursor:${locked?'default':'pointer'};z-index:3;user-select:none;transition:transform .15s`;
 
-    // Hexagonal map marker
-    const marker=document.createElement('div');
-    marker.style.cssText=`width:46px;height:46px;
-      clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
-      display:flex;align-items:center;justify-content:center;font-size:19px;
-      background:${sel?col+'55':locked?'#111':'#0e0e1e'};
-      border:none;outline:${sel?'2px solid '+col:'none'};
-      box-shadow:${sel?'0 0 14px '+col+'99':'none'};
-      opacity:${locked?0.35:1};transition:all .2s`;
-    marker.textContent=locked?'🔒':d.em;
+    const inner=document.createElement('div');
+    inner.style.cssText=`display:flex;align-items:center;gap:5px;
+      padding:4px 9px;border-radius:4px;
+      background:${sel?col+'33':locked?'rgba(0,0,0,.55)':'rgba(0,0,0,.65)'};
+      border:1px solid ${sel?col:locked?'#222':'#333'};
+      box-shadow:${sel?'0 0 10px '+col+'66':'0 2px 6px rgba(0,0,0,.6)'};
+      opacity:${locked?0.45:1};transition:all .18s;white-space:nowrap`;
 
-    const label=document.createElement('div');
-    label.style.cssText=`font-size:7.5px;font-family:var(--font-d);
-      color:${sel?col:locked?'#333':'#666'};
-      text-align:center;white-space:nowrap;letter-spacing:.3px;
-      text-shadow:0 1px 4px #000;max-width:60px;line-height:1.2`;
-    label.textContent=locked?'Lv'+d.minLvl:d.n;
+    inner.innerHTML=`<span style="font-size:13px">${locked?'🔒':d.em}</span>
+      <span style="font-size:9px;font-family:var(--font-d);letter-spacing:.4px;
+        color:${sel?col:locked?'#444':'#aaa'};text-shadow:0 1px 4px #000">
+        ${locked?'Lv '+d.minLvl:d.n}
+      </span>
+      ${sel?`<span style="font-size:7px;color:${col};font-family:var(--font-d)">●</span>`:''}`;
 
-    node.appendChild(marker);node.appendChild(label);
+    plate.appendChild(inner);
 
     if(!locked){
-      node.onmouseenter=()=>{
-        marker.style.background=col+'44';
-        marker.style.boxShadow='0 0 12px '+col+'88';
-        node.style.transform='translate(-50%,-50%) scale(1.12)';
+      plate.onmouseenter=(e)=>{
+        inner.style.background=col+'44';
+        inner.style.borderColor=col;
+        inner.style.boxShadow='0 0 10px '+col+'77';
+        plate.style.transform='translate(-50%,-50%) scale(1.08)';
+        // Position tooltip
+        const er=[0.15,0.20,0.27,0.35,0.44,0.55,0.62,0.69,0.76,0.83][i]||0.15;
+        const br=[0.30,0.38,0.48,0.58,0.70,0.85,0.92,0.98,1.05,1.12][i]||0.30;
+        const rr=[0.08,0.10,0.13,0.16,0.20,0.25,0.28,0.31,0.34,0.38][i]||0.08;
+        const bossP=runs>0?Math.round(Math.pow(1+br,runs)*100):100;
+        const p2pct=Math.round(Math.min(0.50+runs*0.07,0.82)*100);
+        const dsTag=runs>=3?'<span style="color:var(--red3)"> · ⚡DS</span>':'';
+        tooltip.innerHTML=`
+          <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px;border-bottom:1px solid #222;padding-bottom:6px">
+            <span style="font-size:18px">${d.em}</span>
+            <div>
+              <div style="font-size:11px;font-family:var(--font-d);color:${col};letter-spacing:.4px">${d.n}</div>
+              <div style="font-size:9px;color:var(--txt3);font-style:italic">${d.desc}</div>
+            </div>
+          </div>
+          <div style="font-size:9px;color:var(--txt3);display:grid;grid-template-columns:1fr 1fr;gap:3px 10px">
+            <span>Min Level: <b style="color:var(--txt)">${d.minLvl}</b></span>
+            <span>Run: <b style="color:var(--amber3)">${runs+1}</b></span>
+            <span>Enemy: <b style="color:var(--red3)">${Math.round((1+runs*er)*100)}%</b></span>
+            <span>Boss: <b style="color:var(--red3)">${bossP}%</b>${dsTag}</span>
+            <span>P2 at: <b style="color:var(--txt)">${p2pct}%</b></span>
+            <span>Rewards: <b style="color:var(--green3)">${Math.round((1+runs*rr)*100)}%</b></span>
+          </div>
+          <div style="margin-top:6px;font-size:9px;color:var(--txt3);border-top:1px solid #222;padding-top:5px">Boss: <b style="color:var(--txt)">${d.boss.n}</b></div>`;
+        // Smart tooltip positioning — flip if too close to edge
+        const rect=nodesDiv.getBoundingClientRect();
+        const plateRect=plate.getBoundingClientRect();
+        const tipLeft=xp>60?'auto':'calc('+xp+'% + 30px)';
+        const tipRight=xp>60?'calc('+(100-xp)+'% + 30px)':'auto';
+        const tipTop=yp>70?'auto':'calc('+yp+'% + 18px)';
+        const tipBottom=yp>70?'calc('+(100-yp)+'% + 18px)':'auto';
+        tooltip.style.left=tipLeft;tooltip.style.right=tipRight;
+        tooltip.style.top=tipTop;tooltip.style.bottom=tipBottom;
+        tooltip.style.display='block';
       };
-      node.onmouseleave=()=>{
-        marker.style.background=sel?col+'55':'#0e0e1e';
-        marker.style.boxShadow=sel?'0 0 14px '+col+'99':'none';
-        node.style.transform='translate(-50%,-50%) scale(1)';
+      plate.onmouseleave=()=>{
+        inner.style.background=sel?col+'33':'rgba(0,0,0,.65)';
+        inner.style.borderColor=sel?col:'#333';
+        inner.style.boxShadow=sel?'0 0 10px '+col+'66':'0 2px 6px rgba(0,0,0,.6)';
+        plate.style.transform='translate(-50%,-50%) scale(1)';
+        tooltip.style.display='none';
       };
-      node.onclick=()=>selectDungeonNode(i);
+      plate.onclick=()=>selectDungeonNode(i);
     }
-    nodesDiv.appendChild(node);
+    nodesDiv.appendChild(plate);
   });
 }
 
@@ -1074,33 +1104,6 @@ function selectDungeonNode(i){
   const locked=G.level<d.minLvl;if(locked)return;
   setDungeon(i);
   renderDungeonList();
-  // Show detail panel
-  const panel=document.getElementById('dng-detail');if(!panel)return;
-  panel.style.display='block';
-  const runs=(G.dungeonRuns||[])[i]||0;
-  const er=[0.15,0.20,0.27,0.35,0.44,0.55,0.62,0.69,0.76,0.83][i]||0.15;
-  const br=[0.30,0.38,0.48,0.58,0.70,0.85,0.92,0.98,1.05,1.12][i]||0.30;
-  const rr=[0.08,0.10,0.13,0.16,0.20,0.25,0.28,0.31,0.34,0.38][i]||0.08;
-  const bossP=runs>0?Math.round(Math.pow(1+br,runs)*100):100;
-  const p2pct=Math.round(Math.min(0.50+runs*0.07,0.82)*100);
-  const dsTag=runs>=3?' · <b style="color:var(--red3)">⚡DS</b>':'';
-  const col=DNG_TERRAIN[i];
-  panel.innerHTML=`
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:5px">
-      <span style="font-size:22px">${d.em}</span>
-      <div style="flex:1">
-        <div style="font-family:var(--font-d);font-size:12px;color:${col}">${d.n} <span style="font-size:9px;color:var(--green3)">● ACTIVE</span></div>
-        <div style="font-size:10px;color:var(--txt3);font-style:italic">${d.desc}</div>
-      </div>
-    </div>
-    <div style="font-size:9px;color:var(--txt3);font-family:var(--font-m);display:flex;gap:12px;flex-wrap:wrap">
-      <span>Lv <b style="color:var(--txt)">${d.minLvl}</b></span>
-      <span>Boss: <b style="color:var(--txt)">${d.boss.n}</b></span>
-      <span>Run <b style="color:var(--amber3)">${runs+1}</b></span>
-      <span>Enemy <b style="color:var(--red3)">${Math.round((1+runs*er)*100)}%</b></span>
-      <span>Boss <b style="color:var(--red3)">${bossP}%</b> · P2@${p2pct}%${dsTag}</span>
-      <span>Rewards <b style="color:var(--green3)">${Math.round((1+runs*rr)*100)}%</b></span>
-    </div>`;
 }
 
 function renderPips(){

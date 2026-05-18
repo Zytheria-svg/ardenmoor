@@ -915,7 +915,7 @@ function startGame(cls){
   const c=CLS[cls];
   const titles={rogue:'Shadowblade',mage:'Archmage',paladin:'Lightbringer',archer:'Wanderer'};
   G={cls,charName:c.n+' the '+titles[cls],
-    level:1,xp:0,xpNext:500000,gold:80,str:c.str,dex:c.dex,int:c.int,con:c.con,wis:c.wis,cha:c.cha,
+    level:1,xp:0,xpNext:250000,gold:80,str:c.str,dex:c.dex,int:c.int,con:c.con,wis:c.wis,cha:c.cha,
     maxHp:c.hp,hp:c.hp,maxMana:c.mana,mana:c.mana,crit:c.crit,baseDmg:[...c.dmg],baseAC:c.ac,atkBonus:c.atk,
     equip:{head:null,chest:null,hands:null,feet:null,weapon:null,offhand:null,ring:null,neck:null},
     bag:[],vault:[],inCombat:false,enemy:null,step:0,clears:0,bosses:0,totalGold:80,killed:0,

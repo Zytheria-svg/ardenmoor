@@ -54,7 +54,7 @@ Prestige now costs **10,000g** per reset.
 
 ### ⚖ Balance Changes — XP Rework
 
-**Flat 500,000 XP per level** (no curve).
+**Flat 250,000 XP per level** (no curve).
 
 **Standardized enemy XP:**
 | Enemy Type | XP |

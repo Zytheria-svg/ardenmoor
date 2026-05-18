@@ -8,16 +8,66 @@
 
 ## 📋 Patch Notes — v13.0
 
-- 🎮 Game renamed to **Hexo Idle**
-- 🗺 Expanded to **10 dungeons**, unlock levels rebalanced
-- 🎨 New dungeon backgrounds and hero sprites for all classes
-- ⭐ New **XP Draught** potion in shop
-- 🗄 Vault expanded to **100 slots**
-- 🎉 Special message on reaching level 50
-- ⚖ XP requirements and enemy rewards rebalanced
-- 💰 Prestige now costs gold
-- ☁ Automatic cloud sync across devices
-- 🔧 Various bug fixes
+### 🎮 Game Renamed — Hexo Idle
+Ardenmoor is now **Hexo Idle**. Title screen, browser tab, and all in-game references updated.
+
+---
+
+### 🗺 10 Dungeons
+Expanded from 6 to **10 dungeons**. Four new dungeons added, all unlock levels rebalanced to +5 per tier:
+
+| # | Name | Min Level |
+|---|---|---|
+| 1 | 🕳️ Goblin Warrens | 1 |
+| 2 | ⚰️ Crypt of Whispers | 6 |
+| 3 | 🍄 Fungal Depths | 11 |
+| 4 | 🔥 Infernal Citadel | 16 |
+| 5 | 🌊 Sunken Necropolis | 21 |
+| 6 | 🌋 Ashen Wastes | 26 |
+| 7 | 💎 Crystal Catacombs | 31 |
+| 8 | 🌑 Shadow Citadel | 36 |
+| 9 | 🕳 Abyssal Maw | 41 |
+| 10 | 🌌 Void Sanctum | 46 |
+
+---
+
+### ⭐ XP Draught Potion
+New potion in the shop — doubles all XP gained for **10 turns**. Price: **1,000g**.
+
+---
+
+### 🗄 Vault Expanded
+Vault storage increased from 80 → **100 slots**.
+
+---
+
+### 🎉 Level 50 — Run Complete
+Reaching level 50 now displays a special congratulations message.
+
+---
+
+### ⭐ Prestige Cost
+Prestige now costs **10,000g** per reset.
+
+---
+
+### ⚖ Balance Changes — XP Rework
+
+**Flat 250,000 XP per level** (no curve).
+
+**Standardized enemy XP:**
+| Enemy Type | XP |
+|---|---|
+| Normal | 2,000 |
+| Elite | 4,000 |
+| Boss | 12,000 |
+
+**Dungeon XP scaling:** When a new dungeon unlocks, all previous dungeons give 10× less XP — encouraging progression while keeping earlier dungeons farmable early on.
+
+---
+
+### ☁ Cloud Sync
+Your save now syncs to the cloud automatically.
 
 ---
 

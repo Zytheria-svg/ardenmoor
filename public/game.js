@@ -984,18 +984,18 @@ function setEnemyVisual(en){
 }
 
 // Clickable region bounds on world-map.png [x1%,y1%,x2%,y2%]
-// Zones sit over the nameplate banners on the image
+// Tight zones over the nameplate banners only
 const DNG_BOUNDS=[
-  [1,38,23,48],  // 1 Goblin Warrens
-  [23,38,44,48], // 2 Crypt of Whispers
-  [44,37,64,47], // 3 Fungal Depths
-  [64,36,99,46], // 4 Infernal Citadel
-  [1,80,17,89],  // 5 Sunken Necropolis
-  [17,80,33,89], // 6 Ashen Wastes
-  [33,80,50,89], // 7 Crystal Catacombs
-  [50,80,67,89], // 8 Shadow Citadel
-  [67,80,83,89], // 9 Abyssal Maw
-  [83,80,99,89]  // 10 Void Sanctum
+  [2,41,22,47],  // 1 Goblin Warrens
+  [24,41,43,47], // 2 Crypt of Whispers
+  [45,40,63,46], // 3 Fungal Depths
+  [65,39,98,45], // 4 Infernal Citadel
+  [1,83,16,89],  // 5 Sunken Necropolis
+  [17,83,32,89], // 6 Ashen Wastes
+  [34,83,50,89], // 7 Crystal Catacombs
+  [51,83,67,89], // 8 Shadow Citadel
+  [68,83,83,89], // 9 Abyssal Maw
+  [84,83,99,89]  // 10 Void Sanctum
 ];
 
 // Glow color per dungeon

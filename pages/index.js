@@ -272,16 +272,16 @@ export default function Home() {
     <div style="font-family:var(--font-d);font-size:9px;color:var(--txt3);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px">🗺 Select Dungeon</div>
     <div id="dng-list" style="position:relative;width:75%;height:420px;border-radius:10px;border:1px solid var(--bord2);overflow:hidden;background:#07090f">
       <div style="position:absolute;inset:0;z-index:0;background:
-        radial-gradient(ellipse at 12% 78%,#0d1f0d 0%,transparent 20%),
-        radial-gradient(ellipse at 32% 88%,#1a150a 0%,transparent 18%),
-        radial-gradient(ellipse at 55% 80%,#1a0a0a 0%,transparent 18%),
-        radial-gradient(ellipse at 78% 78%,#1a0808 0%,transparent 18%),
-        radial-gradient(ellipse at 88% 55%,#08101a 0%,transparent 18%),
-        radial-gradient(ellipse at 72% 35%,#100818 0%,transparent 18%),
-        radial-gradient(ellipse at 50% 25%,#0d0d1a 0%,transparent 18%),
-        radial-gradient(ellipse at 28% 35%,#0a0a1a 0%,transparent 18%),
-        radial-gradient(ellipse at 14% 52%,#0a0514 0%,transparent 18%),
-        radial-gradient(ellipse at 38% 10%,#070312 0%,transparent 18%),
+        radial-gradient(ellipse at 14% 84%,#0d2e0d 0%,transparent 22%),
+        radial-gradient(ellipse at 42% 90%,#2a1f08 0%,transparent 22%),
+        radial-gradient(ellipse at 72% 82%,#2a0a0a 0%,transparent 22%),
+        radial-gradient(ellipse at 88% 65%,#220808 0%,transparent 20%),
+        radial-gradient(ellipse at 78% 45%,#081828 0%,transparent 22%),
+        radial-gradient(ellipse at 52% 50%,#180a28 0%,transparent 22%),
+        radial-gradient(ellipse at 22% 52%,#0d0d28 0%,transparent 20%),
+        radial-gradient(ellipse at 12% 30%,#0a0a22 0%,transparent 20%),
+        radial-gradient(ellipse at 46% 22%,#100520 0%,transparent 20%),
+        radial-gradient(ellipse at 78% 12%,#080318 0%,transparent 20%),
         #07090f"></div>
       <svg id="dng-map-svg" width="100%" height="100%" style="position:absolute;inset:0;z-index:1"></svg>
       <div id="dng-map-nodes" style="position:absolute;inset:0;z-index:2"></div>

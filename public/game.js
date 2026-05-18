@@ -985,10 +985,10 @@ function setEnemyVisual(en){
 
 // Dungeon node positions on the world map [x%, y%]
 const DNG_POS=[
-  [12,78],[32,88],[55,80],  // D1 D2 D3
-  [78,78],[88,55],[72,35],  // D4 D5 D6
-  [50,25],[28,35],[14,52],  // D7 D8 D9
-  [38,10]                   // D10
+  [14,84],[42,90],[72,82],  // D1 D2 D3
+  [88,65],[78,45],[52,50],  // D4 D5 D6
+  [22,52],[12,30],[46,22],  // D7 D8 D9
+  [78,12]                   // D10
 ];
 
 // Terrain color per dungeon for map region glow
@@ -1013,7 +1013,7 @@ function renderDungeonList(){
     // Soft territory glow blob
     const blob=document.createElementNS('http://www.w3.org/2000/svg','ellipse');
     blob.setAttribute('cx',xp+'%');blob.setAttribute('cy',yp+'%');
-    blob.setAttribute('rx','9%');blob.setAttribute('ry','12%');
+    blob.setAttribute('rx','13%');blob.setAttribute('ry','14%');
     blob.setAttribute('fill',col);
     blob.setAttribute('fill-opacity',locked?'0.04':sel?'0.18':'0.09');
     svg.appendChild(blob);

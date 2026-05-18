@@ -195,55 +195,6 @@ async function showCloudSlots(){
 }
 
 // ═══════════════════════════════════════
-// TRANSFER CODE — cross-device save
-// ═══════════════════════════════════════
-function setTransferStatus(msg,ok){
-  const el=document.getElementById('transfer-status');
-  if(el){el.textContent=msg;el.style.color=ok===true?'var(--green3)':ok===false?'var(--red3)':'var(--txt3)';}
-}
-
-async function generateTransferCode(){
-  if(!G){push('No game in progress!');return;}
-  const sb=getSB();if(!sb){push('☁️ Supabase not configured','bad');return;}
-  // Generate a random 6-char alphanumeric code
-  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let code='';for(let i=0;i<6;i++)code+=chars[Math.floor(Math.random()*chars.length)];
-  const slotName='xfer_'+code;
-  const expires=new Date(Date.now()+24*60*60*1000).toISOString();
-  setTransferStatus('⏳ Generating code…',null);
-  try{
-    const row={slot_name:slotName,char_name:G.charName||'Hero',level:G.level||1,cls:G.cls||'rogue',
-      save_data:G,protected:false,pin:null,updated_at:new Date().toISOString(),expires_at:expires};
-    const{error}=await sb.from('cloud_saves').upsert(row,{onConflict:'slot_name'});
-    if(error)throw error;
-    const disp=document.getElementById('transfer-code-display');
-    const val=document.getElementById('transfer-code-value');
-    if(disp)disp.style.display='block';
-    if(val)val.textContent=code;
-    setTransferStatus('✓ Code ready! Enter it on your other device.',true);
-  }catch(e){setTransferStatus('✗ Failed: '+e.message,false);}
-}
-
-async function loadByTransferCode(){
-  const sb=getSB();if(!sb){push('☁️ Supabase not configured','bad');return;}
-  const input=document.getElementById('transfer-code-input');
-  const code=(input?.value||'').trim().toUpperCase();
-  if(code.length!==6){setTransferStatus('✗ Enter a valid 6-character code.',false);return;}
-  const slotName='xfer_'+code;
-  setTransferStatus('⏳ Looking up code…',null);
-  try{
-    const{data,error}=await sb.from('cloud_saves').select('*').eq('slot_name',slotName).maybeSingle();
-    if(error)throw error;
-    if(!data){setTransferStatus('✗ Code not found or expired.',false);return;}
-    if(!data.save_data)throw new Error('Empty save data');
-    localStorage.setItem(SK,JSON.stringify({G:data.save_data,ts:Date.now()}));
-    setTransferStatus('✓ Save imported! Restarting…',true);
-    push('📲 Transfer complete! Restarting…','info');
-    setTimeout(()=>location.reload(),900);
-  }catch(e){setTransferStatus('✗ Import failed: '+e.message,false);}
-}
-
-// ═══════════════════════════════════════
 // SETTINGS
 // ═══════════════════════════════════════
 function openSettings(){document.getElementById('settings-panel').classList.add('open');syncThemeBtn();showCloudSlots();}

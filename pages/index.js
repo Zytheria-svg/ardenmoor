@@ -85,23 +85,6 @@ export default function Home() {
         </div>
         <div id="cloud-status" style="font-size:10.5px;font-family:var(--font-m);min-height:16px;padding:4px 7px;background:var(--bg3);border-radius:5px;color:var(--txt3)"></div>
       </div>
-      <div style="margin-top:10px;padding:10px 13px;background:var(--bg2);border-radius:9px;border:1px solid var(--bord)">
-        <div style="font-size:10px;color:var(--teal3);font-family:var(--font-d);letter-spacing:.5px;margin-bottom:7px">📲 TRANSFER TO ANOTHER DEVICE</div>
-        <div style="font-size:10px;color:var(--txt3);font-family:var(--font-m);margin-bottom:8px">Generate a 6-digit code on this device, then enter it on another device to import your save.</div>
-        <div style="display:flex;gap:6px;margin-bottom:8px">
-          <button class="btn btn-primary" style="flex:1;font-size:11px;padding:6px 0" onclick="generateTransferCode()">📤 Generate Code</button>
-        </div>
-        <div id="transfer-code-display" style="display:none;text-align:center;margin-bottom:8px">
-          <div style="font-size:10px;color:var(--txt3);margin-bottom:4px">Your transfer code:</div>
-          <div id="transfer-code-value" style="font-family:var(--font-d);font-size:26px;letter-spacing:6px;color:var(--gold2);background:var(--bg1);border:1px solid var(--gold2);border-radius:7px;padding:8px 16px"></div>
-          <div style="font-size:9.5px;color:var(--txt3);margin-top:4px">Code expires after 24 hours. Enter it on your other device below.</div>
-        </div>
-        <div style="display:flex;gap:6px">
-          <input id="transfer-code-input" placeholder="Enter code…" maxlength="6" style="flex:1;background:var(--bg1);border:1px solid var(--bord2);border-radius:6px;padding:6px 10px;font-size:14px;color:var(--txt);font-family:var(--font-d);letter-spacing:4px;outline:none;text-transform:uppercase;box-sizing:border-box" onfocus="this.style.borderColor='var(--teal2)'" onblur="this.style.borderColor='var(--bord2)'" oninput="this.value=this.value.toUpperCase()"/>
-          <button class="btn btn-gold" style="font-size:11px;padding:6px 14px" onclick="loadByTransferCode()">📥 Import</button>
-        </div>
-        <div id="transfer-status" style="font-size:10.5px;font-family:var(--font-m);min-height:16px;padding:4px 7px;margin-top:6px;background:var(--bg3);border-radius:5px;color:var(--txt3)"></div>
-      </div>
     </div>
     <div style="display:flex;gap:8px">
       <button class="btn btn-red" style="flex:1;font-size:12px" onclick="confirmNewGame()">⚑ New Game</button>

@@ -270,7 +270,7 @@ export default function Home() {
   <!-- DUNGEON MAP -->
   <div style="margin-top:9px">
     <div style="font-family:var(--font-d);font-size:9px;color:var(--txt3);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px">🗺 Select Dungeon</div>
-    <div id="dng-list" style="position:relative;width:75%;height:420px;border-radius:10px;border:1px solid var(--bord2);overflow:hidden;background:#07090f">
+    <div id="dng-list" style="position:relative;width:100%;height:600px;border-radius:10px;border:1px solid var(--bord2);overflow:hidden;background:#07090f">
       <div style="position:absolute;inset:0;z-index:0;background:
         radial-gradient(ellipse at 14% 84%,#0d2e0d 0%,transparent 22%),
         radial-gradient(ellipse at 42% 90%,#2a1f08 0%,transparent 22%),

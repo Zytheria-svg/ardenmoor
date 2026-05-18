@@ -1013,7 +1013,7 @@ function renderDungeonList(){
     // Soft territory glow blob
     const blob=document.createElementNS('http://www.w3.org/2000/svg','ellipse');
     blob.setAttribute('cx',xp+'%');blob.setAttribute('cy',yp+'%');
-    blob.setAttribute('rx','13%');blob.setAttribute('ry','14%');
+    blob.setAttribute('rx','9%');blob.setAttribute('ry','10%');
     blob.setAttribute('fill',col);
     blob.setAttribute('fill-opacity',locked?'0.04':sel?'0.18':'0.09');
     svg.appendChild(blob);

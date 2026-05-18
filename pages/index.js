@@ -176,7 +176,6 @@ export default function Home() {
   </div>
   <div style="width:1px;height:16px;background:var(--bord2)"></div>
   <button class="tab-btn active" id="tb-b" onclick="showTab('t-battle','tb-b')">⚔ <span>Battle</span></button>
-  <button class="tab-btn" id="tb-d" onclick="showTab('t-dungeon','tb-d')">🗺 <span>Dungeons</span></button>
   <button class="tab-btn" id="tb-s" onclick="showTab('t-sheet','tb-s')">📜 <span>Sheet</span></button>
   <button class="tab-btn" id="tb-bg" onclick="showTab('t-bag','tb-bg')">🎒 <span>Bag</span></button>
   <button class="tab-btn" id="tb-st" onclick="showTab('t-storage','tb-st')">📦 <span>Vault</span></button>
@@ -269,17 +268,31 @@ export default function Home() {
     <div style="font-size:11px;color:var(--txt2);font-style:italic" id="enc-desc">—</div>
   </div>
 </div>
-</div>
-</div>
 
-<!-- DUNGEON TAB -->
-<div id="t-dungeon" class="tab-c">
-  <div style="font-family:var(--font-d);font-size:10.5px;color:var(--txt3);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px">World Map — Select a Dungeon</div>
-  <div id="dng-list" style="position:relative;width:100%;height:340px;background:radial-gradient(ellipse at 50% 60%,#0d1a0f 0%,#080c10 70%,#04060a 100%);border-radius:12px;border:1px solid var(--bord2);overflow:hidden">
+<!-- DUNGEON MAP — always visible below arena -->
+<div style="margin-top:10px">
+  <div style="font-family:var(--font-d);font-size:9.5px;color:var(--txt3);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px">🗺 Select Dungeon</div>
+  <div id="dng-list" style="position:relative;width:100%;height:280px;border-radius:12px;border:1px solid var(--bord2);overflow:hidden;background:#07090f">
+    <!-- Map terrain layer -->
+    <div style="position:absolute;inset:0;z-index:0;background:
+      radial-gradient(ellipse at 18% 82%,#0d1f0d 0%,transparent 28%),
+      radial-gradient(ellipse at 50% 88%,#1a150a 0%,transparent 22%),
+      radial-gradient(ellipse at 82% 75%,#1a0a0a 0%,transparent 25%),
+      radial-gradient(ellipse at 88% 55%,#1a0808 0%,transparent 22%),
+      radial-gradient(ellipse at 65% 40%,#08101a 0%,transparent 25%),
+      radial-gradient(ellipse at 35% 40%,#100818 0%,transparent 25%),
+      radial-gradient(ellipse at 12% 55%,#0d0d1a 0%,transparent 22%),
+      radial-gradient(ellipse at 20% 28%,#0a0a1a 0%,transparent 22%),
+      radial-gradient(ellipse at 55% 18%,#0a0514 0%,transparent 22%),
+      radial-gradient(ellipse at 82% 12%,#070312 0%,transparent 22%),
+      #07090f"></div>
     <svg id="dng-map-svg" width="100%" height="100%" style="position:absolute;inset:0;z-index:1"></svg>
     <div id="dng-map-nodes" style="position:absolute;inset:0;z-index:2"></div>
   </div>
-  <div id="dng-detail" style="margin-top:10px;padding:10px 14px;background:var(--bg2);border-radius:9px;border:1px solid var(--bord);min-height:64px;display:none"></div>
+  <div id="dng-detail" style="margin-top:7px;padding:9px 13px;background:var(--bg2);border-radius:9px;border:1px solid var(--bord);display:none"></div>
+</div>
+
+</div>
 </div>
 
 <!-- SHEET TAB -->

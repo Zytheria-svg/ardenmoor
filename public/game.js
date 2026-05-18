@@ -985,10 +985,17 @@ function setEnemyVisual(en){
 
 // Dungeon node positions on the world map [x%, y%]
 const DNG_POS=[
-  [18,82],[50,88],[82,75],  // D1 D2 D3
-  [88,55],[65,40],[35,40],  // D4 D5 D6
-  [12,55],[20,28],[55,18],  // D7 D8 D9
-  [82,12]                   // D10
+  [12,78],[32,88],[55,80],  // D1 D2 D3
+  [78,78],[88,55],[72,35],  // D4 D5 D6
+  [50,25],[28,35],[14,52],  // D7 D8 D9
+  [38,10]                   // D10
+];
+
+// Terrain color per dungeon for map region glow
+const DNG_TERRAIN=[
+  '#1f6830','#5245c2','#8c5c08','#b02828',
+  '#164488','#8c3a08','#2080a0','#3a2060',
+  '#1a0a30','#5245c2'
 ];
 
 function renderDungeonList(){
@@ -997,18 +1004,20 @@ function renderDungeonList(){
   if(!svg||!nodesDiv)return;
   svg.innerHTML='';nodesDiv.innerHTML='';
 
-  // Draw connecting path lines
-  for(let i=0;i<DUNGEONS.length-1;i++){
-    const [x1,y1]=DNG_POS[i],[x2,y2]=DNG_POS[i+1];
-    const locked=G.level<DUNGEONS[i+1].minLvl;
-    const line=document.createElementNS('http://www.w3.org/2000/svg','line');
-    line.setAttribute('x1',x1+'%');line.setAttribute('y1',y1+'%');
-    line.setAttribute('x2',x2+'%');line.setAttribute('y2',y2+'%');
-    line.setAttribute('stroke',locked?'#1a1a2a':'#3a3060');
-    line.setAttribute('stroke-width','2');
-    line.setAttribute('stroke-dasharray',locked?'4,4':'none');
-    svg.appendChild(line);
-  }
+  // Draw subtle territory blobs via SVG circles (map region feel, no roads)
+  DUNGEONS.forEach((d,i)=>{
+    const [xp,yp]=DNG_POS[i];
+    const locked=G.level<d.minLvl;
+    const sel=G.activeDungeon===i;
+    const col=DNG_TERRAIN[i];
+    // Soft territory glow blob
+    const blob=document.createElementNS('http://www.w3.org/2000/svg','ellipse');
+    blob.setAttribute('cx',xp+'%');blob.setAttribute('cy',yp+'%');
+    blob.setAttribute('rx','9%');blob.setAttribute('ry','12%');
+    blob.setAttribute('fill',col);
+    blob.setAttribute('fill-opacity',locked?'0.04':sel?'0.18':'0.09');
+    svg.appendChild(blob);
+  });
 
   // Draw dungeon nodes
   DUNGEONS.forEach((d,i)=>{
@@ -1016,37 +1025,44 @@ function renderDungeonList(){
     const locked=G.level<d.minLvl;
     const sel=G.activeDungeon===i;
     const runs=(G.dungeonRuns||[])[i]||0;
+    const col=DNG_TERRAIN[i];
 
     const node=document.createElement('div');
     node.style.cssText=`position:absolute;left:${xp}%;top:${yp}%;transform:translate(-50%,-50%);
-      display:flex;flex-direction:column;align-items:center;gap:2px;cursor:${locked?'default':'pointer'};
-      z-index:3;transition:transform .15s`;
+      display:flex;flex-direction:column;align-items:center;gap:2px;
+      cursor:${locked?'default':'pointer'};z-index:3;transition:transform .15s;user-select:none`;
 
-    const circle=document.createElement('div');
-    circle.style.cssText=`width:44px;height:44px;border-radius:50%;display:flex;align-items:center;
-      justify-content:center;font-size:20px;border:2px solid ${sel?'var(--gold2)':locked?'#222':'#3a3060'};
-      background:${sel?'rgba(196,144,30,.25)':locked?'rgba(10,10,20,.8)':'rgba(20,14,40,.85)'};
-      box-shadow:${sel?'0 0 12px rgba(196,144,30,.6)':'none'};
-      opacity:${locked?0.4:1};transition:box-shadow .2s`;
-    circle.textContent=locked?'🔒':d.em;
+    // Hexagonal map marker
+    const marker=document.createElement('div');
+    marker.style.cssText=`width:46px;height:46px;
+      clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+      display:flex;align-items:center;justify-content:center;font-size:19px;
+      background:${sel?col+'55':locked?'#111':'#0e0e1e'};
+      border:none;outline:${sel?'2px solid '+col:'none'};
+      box-shadow:${sel?'0 0 14px '+col+'99':'none'};
+      opacity:${locked?0.35:1};transition:all .2s`;
+    marker.textContent=locked?'🔒':d.em;
 
     const label=document.createElement('div');
-    label.style.cssText=`font-size:8.5px;font-family:var(--font-d);color:${sel?'var(--gold2)':locked?'#444':'var(--txt3)'};
-      text-align:center;white-space:nowrap;letter-spacing:.3px;text-shadow:0 1px 3px #000`;
-    label.textContent=locked?'LVL '+d.minLvl:d.n.split(' ').slice(0,2).join(' ');
+    label.style.cssText=`font-size:7.5px;font-family:var(--font-d);
+      color:${sel?col:locked?'#333':'#666'};
+      text-align:center;white-space:nowrap;letter-spacing:.3px;
+      text-shadow:0 1px 4px #000;max-width:60px;line-height:1.2`;
+    label.textContent=locked?'Lv'+d.minLvl:d.n;
 
-    if(runs>0&&!locked){
-      const badge=document.createElement('div');
-      badge.style.cssText='font-size:7.5px;color:var(--amber3);font-family:var(--font-m);text-shadow:0 1px 3px #000';
-      badge.textContent='⚔ Run '+(runs+1);
-      node.appendChild(circle);node.appendChild(label);node.appendChild(badge);
-    } else {
-      node.appendChild(circle);node.appendChild(label);
-    }
+    node.appendChild(marker);node.appendChild(label);
 
     if(!locked){
-      node.onmouseenter=()=>{circle.style.boxShadow='0 0 10px '+d.col+'88';node.style.transform='translate(-50%,-50%) scale(1.12)';};
-      node.onmouseleave=()=>{circle.style.boxShadow=sel?'0 0 12px rgba(196,144,30,.6)':'none';node.style.transform='translate(-50%,-50%) scale(1)';};
+      node.onmouseenter=()=>{
+        marker.style.background=col+'44';
+        marker.style.boxShadow='0 0 12px '+col+'88';
+        node.style.transform='translate(-50%,-50%) scale(1.12)';
+      };
+      node.onmouseleave=()=>{
+        marker.style.background=sel?col+'55':'#0e0e1e';
+        marker.style.boxShadow=sel?'0 0 14px '+col+'99':'none';
+        node.style.transform='translate(-50%,-50%) scale(1)';
+      };
       node.onclick=()=>selectDungeonNode(i);
     }
     nodesDiv.appendChild(node);
@@ -1057,6 +1073,7 @@ function selectDungeonNode(i){
   const d=DUNGEONS[i];
   const locked=G.level<d.minLvl;if(locked)return;
   setDungeon(i);
+  renderDungeonList();
   // Show detail panel
   const panel=document.getElementById('dng-detail');if(!panel)return;
   panel.style.display='block';
@@ -1066,21 +1083,22 @@ function selectDungeonNode(i){
   const rr=[0.08,0.10,0.13,0.16,0.20,0.25,0.28,0.31,0.34,0.38][i]||0.08;
   const bossP=runs>0?Math.round(Math.pow(1+br,runs)*100):100;
   const p2pct=Math.round(Math.min(0.50+runs*0.07,0.82)*100);
-  const dsTag=runs>=3?' · <b style="color:var(--red3)">⚡ Double Strike</b>':'';
+  const dsTag=runs>=3?' · <b style="color:var(--red3)">⚡DS</b>':'';
+  const col=DNG_TERRAIN[i];
   panel.innerHTML=`
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-      <span style="font-size:24px">${d.em}</span>
-      <div>
-        <div style="font-family:var(--font-d);font-size:13px;color:${d.col}">${d.n} <span style="font-size:9px;color:var(--green3)">● ACTIVE</span></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:5px">
+      <span style="font-size:22px">${d.em}</span>
+      <div style="flex:1">
+        <div style="font-family:var(--font-d);font-size:12px;color:${col}">${d.n} <span style="font-size:9px;color:var(--green3)">● ACTIVE</span></div>
         <div style="font-size:10px;color:var(--txt3);font-style:italic">${d.desc}</div>
       </div>
     </div>
-    <div style="font-size:9.5px;color:var(--txt3);font-family:var(--font-m);display:flex;gap:14px;flex-wrap:wrap">
-      <span>Min LVL <b style="color:var(--txt)">${d.minLvl}</b></span>
-      <span>Boss <b style="color:var(--txt)">${d.boss.n}</b></span>
+    <div style="font-size:9px;color:var(--txt3);font-family:var(--font-m);display:flex;gap:12px;flex-wrap:wrap">
+      <span>Lv <b style="color:var(--txt)">${d.minLvl}</b></span>
+      <span>Boss: <b style="color:var(--txt)">${d.boss.n}</b></span>
       <span>Run <b style="color:var(--amber3)">${runs+1}</b></span>
       <span>Enemy <b style="color:var(--red3)">${Math.round((1+runs*er)*100)}%</b></span>
-      <span>Boss <b style="color:var(--red3)">${bossP}%</b> (P2@${p2pct}%)${dsTag}</span>
+      <span>Boss <b style="color:var(--red3)">${bossP}%</b> · P2@${p2pct}%${dsTag}</span>
       <span>Rewards <b style="color:var(--green3)">${Math.round((1+runs*rr)*100)}%</b></span>
     </div>`;
 }
@@ -2060,7 +2078,7 @@ document.addEventListener('keydown',e=>{
   if(!G||e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
   const k=e.key.toLowerCase();
   if(k==='1')showTab('t-battle','tb-b');
-  else if(k==='2')showTab('t-dungeon','tb-d');
+  else if(k==='2')showTab('t-sheet','tb-s');
   else if(k==='3')showTab('t-sheet','tb-s');
   else if(k==='4')showTab('t-bag','tb-bg');
   else if(k==='5')showTab('t-storage','tb-st');

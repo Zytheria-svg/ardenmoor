@@ -59,26 +59,14 @@ export default function Home() {
       <div style="padding:10px 13px;background:var(--bg2);border-radius:9px;border:1px solid var(--bord)">
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
           <span style="font-size:14px">☁</span>
-          <span style="font-size:12px;font-weight:600;color:var(--txt);font-family:var(--font-d);letter-spacing:.3px">Cloud Save</span>
-          <span style="font-size:9.5px;color:var(--txt3);font-style:italic">— any device, anytime</span>
+          <span style="font-size:12px;font-weight:600;color:var(--txt);font-family:var(--font-d);letter-spacing:.3px">Cloud Sync</span>
+          <span style="font-size:9.5px;color:var(--green3);font-style:italic">— automatic</span>
         </div>
-        <div style="font-size:9.5px;color:var(--txt3);font-family:var(--font-m);margin-bottom:8px;padding:5px 8px;background:var(--bg3);border-radius:5px;line-height:1.5">Pick a <b>Save Name</b> and use it on any device to access your save. Add a PIN so only you can overwrite or load it.</div>
-        <div style="display:flex;gap:7px;margin-bottom:7px">
-          <div style="flex:2">
-            <label style="font-size:10px;color:var(--txt3);font-family:var(--font-d);letter-spacing:.4px;display:block;margin-bottom:4px">SAVE NAME</label>
-            <input id="cloud-save-name" placeholder="e.g. dragonslayer, myrun…" style="width:100%;background:var(--bg1);border:1px solid var(--bord2);border-radius:6px;padding:6px 10px;font-size:12px;color:var(--txt);font-family:var(--font-b);outline:none;transition:border-color .15s;box-sizing:border-box" onfocus="this.style.borderColor='var(--purple2)'" onblur="this.style.borderColor='var(--bord2)'"/>
-          </div>
-          <div style="flex:1">
-            <label style="font-size:10px;color:var(--txt3);font-family:var(--font-d);letter-spacing:.4px;display:block;margin-bottom:4px">PIN <span style="color:var(--txt3);font-style:italic;font-size:9px">(optional)</span></label>
-            <input id="cloud-pin" type="password" placeholder="••••" maxlength="20" style="width:100%;background:var(--bg1);border:1px solid var(--bord2);border-radius:6px;padding:6px 10px;font-size:12px;color:var(--txt);font-family:var(--font-b);outline:none;transition:border-color .15s;box-sizing:border-box" onfocus="this.style.borderColor='var(--purple2)'" onblur="this.style.borderColor='var(--bord2)'"/>
-          </div>
-        </div>
+        <div style="font-size:9.5px;color:var(--txt3);font-family:var(--font-m);margin-bottom:8px;padding:5px 8px;background:var(--bg3);border-radius:5px;line-height:1.6">Your save syncs to the cloud automatically as you play. Open the game on any device using the <b>same internet connection</b> and it will restore your save automatically.</div>
+        <div style="font-size:9px;color:var(--txt3);font-family:var(--font-m);margin-bottom:8px;padding:4px 8px;background:var(--bg3);border-radius:5px">🔑 Cloud Key: <span id="cloud-key-val" style="color:var(--gold2);font-family:var(--font-d);letter-spacing:.5px">detecting…</span></div>
         <div style="display:flex;gap:6px;margin-bottom:6px">
-          <button class="btn btn-primary" style="flex:1;font-size:11px;padding:6px 0" onclick="cloudSave()">☁ Save to Cloud</button>
-          <button class="btn btn-gold" style="flex:1;font-size:11px;padding:6px 0" onclick="cloudLoad()">⬇ Load from Cloud</button>
-        </div>
-        <div style="margin-bottom:8px">
-          <button class="btn btn-red" style="width:100%;font-size:10px;padding:4px 0;opacity:.8" onclick="cloudDelete()">🗑 Delete Cloud Save</button>
+          <button class="btn btn-primary" style="flex:1;font-size:11px;padding:6px 0" onclick="cloudForceSave()">☁ Sync Now</button>
+          <button class="btn btn-gold" style="flex:1;font-size:11px;padding:6px 0" onclick="cloudForceLoad()">⬇ Restore from Cloud</button>
         </div>
         <div id="cloud-status" style="font-size:10.5px;font-family:var(--font-m);min-height:16px;padding:4px 7px;background:var(--bg3);border-radius:5px;color:var(--txt3)"></div>
       </div>
@@ -140,14 +128,9 @@ export default function Home() {
       </div>
     </div>
     <div style="margin-top:12px;padding:10px 14px;background:rgba(40,30,120,.25);border:1px solid var(--purple2);border-radius:9px;text-align:left">
-      <div style="font-size:10px;color:var(--purple3);font-family:var(--font-d);letter-spacing:.5px;margin-bottom:6px">☁ CONTINUE FROM CLOUD</div>
-      <div style="font-size:9.5px;color:var(--txt3);margin-bottom:8px">Enter your Save Name (and PIN if set) to load your game on this device.</div>
-      <div style="display:flex;gap:6px;margin-bottom:6px">
-        <input id="title-cloud-name" placeholder="Save Name…" style="flex:2;background:rgba(0,0,0,.3);border:1px solid var(--purple2);border-radius:6px;padding:5px 9px;font-size:12px;color:var(--txt);font-family:var(--font-b);outline:none;box-sizing:border-box"/>
-        <input id="title-cloud-pin" type="password" placeholder="PIN…" maxlength="20" style="flex:1;background:rgba(0,0,0,.3);border:1px solid var(--purple2);border-radius:6px;padding:5px 9px;font-size:12px;color:var(--txt);font-family:var(--font-b);outline:none;box-sizing:border-box"/>
-      </div>
-      <button class="btn btn-gold" style="width:100%;font-size:11px;padding:5px 0" onclick="cloudLoad('title-cloud-name','title-cloud-pin','title-cloud-status')">⬇ Load Cloud Save</button>
-      <div id="title-cloud-status" style="font-size:10.5px;font-family:var(--font-m);min-height:14px;padding:4px 6px;margin-top:6px;color:var(--txt3)"></div>
+      <div style="font-size:10px;color:var(--purple3);font-family:var(--font-d);letter-spacing:.5px;margin-bottom:5px">☁ CLOUD SYNC</div>
+      <div style="font-size:9.5px;color:var(--txt3);line-height:1.5">Your save syncs automatically. On the <b>same internet connection</b>, your save loads instantly. On a new network, click Restore to pull from cloud.</div>
+      <button class="btn btn-gold" style="width:100%;font-size:11px;padding:5px 0;margin-top:8px" onclick="cloudForceLoad()">⬇ Restore from Cloud</button>
     </div>
   </div>
 </div>

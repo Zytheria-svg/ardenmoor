@@ -56,8 +56,10 @@ const SK='ardenmoor_v6';
 function saveGame(){if(!G)return;try{localStorage.setItem(SK,JSON.stringify({G,ts:Date.now()}));}catch(e){}}
 function loadGame(){try{const r=localStorage.getItem(SK)||localStorage.getItem('ardenmoor_v5');return r?JSON.parse(r):null;}catch(e){return null;}}
 let _aSaveT=null;
-function queueSave(){clearTimeout(_aSaveT);_aSaveT=setTimeout(saveGame,1500);}
+function queueSave(){clearTimeout(_aSaveT);_aSaveT=setTimeout(()=>{saveGame();cloudAutoSave();},1500);}
 window.addEventListener('beforeunload',()=>{if(G)saveGame();});
+// Auto-restore cloud save on page load if cloud is newer
+window.addEventListener('load',()=>{setTimeout(cloudAutoLoad,500);});
 
 // ═══════════════════════════════════════
 // CLOUD SAVE / LOAD — Supabase backend
@@ -72,86 +74,92 @@ function getSB(){
   return _sb;
 }
 
-function getCloudSaveName(inputId){
-  const el=document.getElementById(inputId||'cloud-save-name');
-  return (el?.value||'').trim().replace(/[^a-zA-Z0-9_\-]/g,'').slice(0,32);
-}
-function getCloudPin(inputId){
-  const el=document.getElementById(inputId||'cloud-pin');
-  return el&&el.value.trim()?el.value.trim():undefined;
-}
-function setCloudStatus(msg,ok,elId){
-  const el=document.getElementById(elId||'cloud-status');
+function setCloudStatus(msg,ok){
+  const el=document.getElementById('cloud-status');
   if(el){el.textContent=msg;el.style.color=ok===true?'var(--green3)':ok===false?'var(--red3)':'var(--txt3)';}
 }
 
-async function cloudSave(){
-  if(!G){push('No game to save!');return;}
-  const sb=getSB();if(!sb){push('☁️ Supabase not configured','bad');return;}
-  const name=getCloudSaveName();
-  if(!name){setCloudStatus('✗ Enter a save name first.',false);return;}
-  const pin=getCloudPin();
-  setCloudStatus('⏳ Saving…',null);
+// Get or generate a stable per-device cloud key, then try to enrich with public IP
+let _cloudKey=null;
+async function getCloudKey(){
+  if(_cloudKey)return _cloudKey;
+  // Try to get public IP for cross-device linking
   try{
-    const{data:existing}=await sb.from('cloud_saves').select('pin,protected').eq('slot_name',name).maybeSingle();
-    if(existing&&existing.protected){
-      const enteredPin=pin||(window.prompt('🔒 "'+name+'" is PIN-protected. Enter PIN to overwrite:')||'').trim()||undefined;
-      if(!enteredPin){setCloudStatus('✗ PIN required to overwrite.',false);return;}
-      if(existing.pin!==enteredPin){setCloudStatus('✗ Wrong PIN.',false);return;}
-    }
-    const row={slot_name:name,char_name:G.charName||'Hero',level:G.level||1,cls:G.cls||'rogue',
-      save_data:G,protected:!!pin,pin:pin||null,updated_at:new Date().toISOString()};
+    const ctrl=new AbortController();const t=setTimeout(()=>ctrl.abort(),3000);
+    const r=await fetch('https://api.ipify.org?format=json',{signal:ctrl.signal});
+    clearTimeout(t);
+    const d=await r.json();
+    // IP-based key so any device on the same connection auto-syncs
+    _cloudKey='ip_'+d.ip.replace(/[^a-zA-Z0-9]/g,'_');
+  }catch(e){
+    // Fallback: stable per-browser UUID (works offline / if IP fetch fails)
+    let uid=localStorage.getItem('hexo_cloud_uid');
+    if(!uid){uid='dev_'+Math.random().toString(36).slice(2,12);localStorage.setItem('hexo_cloud_uid',uid);}
+    _cloudKey=uid;
+  }
+  // Show key in settings panel if open
+  const el=document.getElementById('cloud-key-val');if(el)el.textContent=_cloudKey;
+  return _cloudKey;
+}
+
+// Silent auto-save — called from queueSave()
+async function cloudAutoSave(){
+  if(!G)return;
+  const sb=getSB();if(!sb)return;
+  const key=await getCloudKey();if(!key)return;
+  try{
+    const row={slot_name:key,char_name:G.charName||'Hero',level:G.level||1,cls:G.cls||'rogue',
+      save_data:G,protected:false,pin:null,updated_at:new Date().toISOString()};
     const{error}=await sb.from('cloud_saves').upsert(row,{onConflict:'slot_name'});
     if(error)throw error;
-    setCloudStatus('✓ '+(pin?'🔒 ':'')+'Saved as "'+name+'"',true);
-    push('☁️ Cloud saved as "'+name+'"'+(pin?' 🔒':''),'info');
-  }catch(e){setCloudStatus('✗ Save failed: '+e.message,false);}
+    setCloudStatus('☁ Synced just now',true);
+  }catch(e){setCloudStatus('⚠ Sync failed',false);}
 }
 
-async function cloudLoad(nameInputId,pinInputId,statusId){
-  const sb=getSB();if(!sb){push('☁️ Supabase not configured','bad');return;}
-  const name=getCloudSaveName(nameInputId);
-  if(!name){setCloudStatus('✗ Enter a save name.',false,statusId);return;}
-  const pin=getCloudPin(pinInputId);
-  setCloudStatus('⏳ Loading…',null,statusId);
+// On startup: if cloud save is newer than local, auto-restore it
+async function cloudAutoLoad(){
+  const sb=getSB();if(!sb)return;
+  const key=await getCloudKey();if(!key)return;
   try{
-    const{data,error}=await sb.from('cloud_saves').select('*').eq('slot_name',name).maybeSingle();
+    const{data}=await sb.from('cloud_saves').select('*').eq('slot_name',key).maybeSingle();
+    if(!data||!data.save_data)return;
+    const local=loadGame();
+    const cloudTs=new Date(data.updated_at).getTime();
+    const localTs=local?.ts||0;
+    // Restore cloud save if it's more than 60s newer than local
+    if(!local||cloudTs>localTs+60000){
+      localStorage.setItem(SK,JSON.stringify({G:data.save_data,ts:cloudTs}));
+      location.reload();
+    }
+  }catch(e){}
+}
+
+// Manual force-sync from settings
+async function cloudForceSave(){
+  if(!G){setCloudStatus('No active game to sync.',false);return;}
+  setCloudStatus('⏳ Syncing…',null);
+  await cloudAutoSave();
+}
+
+// Manual restore from settings
+async function cloudForceLoad(){
+  const sb=getSB();if(!sb){setCloudStatus('Supabase not configured.',false);return;}
+  const key=await getCloudKey();if(!key)return;
+  setCloudStatus('⏳ Loading from cloud…',null);
+  try{
+    const{data,error}=await sb.from('cloud_saves').select('*').eq('slot_name',key).maybeSingle();
     if(error)throw error;
-    if(!data){setCloudStatus('✗ No save found for "'+name+'".',false,statusId);return;}
-    if(data.protected){
-      const enteredPin=pin||(window.prompt('🔒 "'+name+'" is PIN-protected. Enter PIN:')||'').trim()||undefined;
-      if(!enteredPin){setCloudStatus('✗ PIN required.',false,statusId);return;}
-      if(data.pin!==enteredPin){setCloudStatus('✗ Wrong PIN.',false,statusId);return;}
-    }
-    if(!data.save_data)throw new Error('Empty save data');
+    if(!data||!data.save_data){setCloudStatus('✗ No cloud save found for your connection.',false);return;}
     localStorage.setItem(SK,JSON.stringify({G:data.save_data,ts:Date.now()}));
-    setCloudStatus('✓ Loaded "'+name+'"! Restarting…',true,statusId);
+    setCloudStatus('✓ Restored! Restarting…',true);
     setTimeout(()=>location.reload(),800);
-  }catch(e){setCloudStatus('✗ Load failed: '+e.message,false,statusId);}
-}
-
-async function cloudDelete(){
-  const sb=getSB();if(!sb){return;}
-  const name=getCloudSaveName();
-  if(!name){setCloudStatus('✗ Enter a save name to delete.',false);return;}
-  if(!confirm('Delete cloud save "'+name+'"? This cannot be undone.'))return;
-  const pin=getCloudPin();
-  try{
-    const{data:row}=await sb.from('cloud_saves').select('pin,protected').eq('slot_name',name).maybeSingle();
-    if(!row){setCloudStatus('✗ No save found for "'+name+'".',false);return;}
-    if(row.protected){
-      const enteredPin=pin||(window.prompt('🔒 Enter PIN to delete "'+name+'":')||'').trim()||undefined;
-      if(!enteredPin||row.pin!==enteredPin){setCloudStatus('✗ Wrong PIN — delete blocked.',false);return;}
-    }
-    await sb.from('cloud_saves').delete().eq('slot_name',name);
-    setCloudStatus('✓ Deleted "'+name+'".',true);
-  }catch(e){setCloudStatus('✗ Delete failed: '+e.message,false);}
+  }catch(e){setCloudStatus('✗ Restore failed: '+e.message,false);}
 }
 
 // ═══════════════════════════════════════
 // SETTINGS
 // ═══════════════════════════════════════
-function openSettings(){document.getElementById('settings-panel').classList.add('open');syncThemeBtn();showCloudSlots();}
+function openSettings(){document.getElementById('settings-panel').classList.add('open');syncThemeBtn();getCloudKey();}
 function togglePatchNotes(){const b=document.getElementById('patch-notes-box');if(b){const shown=b.style.display!=='none';b.style.display=shown?'none':'block';if(!shown)b.scrollIntoView({behavior:'smooth',block:'center'});}}
 function closeSettings(){document.getElementById('settings-panel').classList.remove('open');}
 

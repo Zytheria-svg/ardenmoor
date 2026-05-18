@@ -867,7 +867,7 @@ function doPrestige(){
   // Reset but keep vault & gold (30%)
   const savedVault=[...G.vault];const savedGold=Math.floor(G.gold*.3);
   const c=CLS[G.cls];const pb=G.prestigeBonus;
-  G.level=1;G.xp=0;G.xpNext=500000;G.gold=savedGold+200;
+  G.level=1;G.xp=0;G.xpNext=250000;G.gold=savedGold+200;
   G.str=c.str+pb.str;G.dex=c.dex+pb.dex;G.int=c.int+pb.int;
   G.con=c.con+pb.con;G.wis=c.wis+pb.wis;G.cha=c.cha+pb.cha;
   G.maxHp=c.hp+pb.hp;G.hp=G.maxHp;G.maxMana=c.mana+pb.mana;G.mana=G.maxMana;
@@ -1485,7 +1485,7 @@ function toggleAutoRetry(){
 }
 
 function levelUp(){
-  G.xp-=G.xpNext;G.level++;G.xpNext=500000;
+  G.xp-=G.xpNext;G.level++;G.xpNext=250000;
   const _hpCap={rogue:12,mage:10,paladin:18,archer:13}[G.cls]||12;
   const hg=Math.min(_hpCap,Math.floor(7+G.con*.45+Math.random()*4+1));
   const mg=Math.floor(5+G.wis*.4+Math.random()*4);

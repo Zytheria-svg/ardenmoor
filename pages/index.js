@@ -57,31 +57,28 @@ export default function Home() {
         <button class="btn" style="font-size:11px;padding:3px 10px;border-color:var(--gold2);color:var(--gold2)" onclick="closeSettings();document.getElementById('s-title').scrollIntoView({behavior:'smooth'});setTimeout(()=>{const b=document.getElementById('patch-notes-box');if(b){b.style.display='block';b.scrollIntoView({behavior:'smooth',block:'center'});}},400)">v13</button>
       </div>
       <div style="padding:10px 13px;background:var(--bg2);border-radius:9px;border:1px solid var(--bord)">
-        <div style="font-size:12px;font-weight:600;color:var(--txt);margin-bottom:8px;font-family:var(--font-d);letter-spacing:.4px">💾 Save Management</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
-          <button class="btn btn-teal" style="font-size:11px;padding:5px 11px" onclick="exportSave()">📤 Export Save</button>
-          <button class="btn" style="font-size:11px;padding:5px 11px" onclick="importSavePrompt()">📥 Import Save</button>
-        </div>
-        <div style="height:1px;background:var(--bord);margin-bottom:10px"></div>
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
           <span style="font-size:14px">☁</span>
           <span style="font-size:12px;font-weight:600;color:var(--txt);font-family:var(--font-d);letter-spacing:.3px">Cloud Save</span>
-          <span style="font-size:9.5px;color:var(--txt3);font-style:italic">— sync across devices</span>
+          <span style="font-size:9.5px;color:var(--txt3);font-style:italic">— any device, anytime</span>
         </div>
+        <div style="font-size:9.5px;color:var(--txt3);font-family:var(--font-m);margin-bottom:8px;padding:5px 8px;background:var(--bg3);border-radius:5px;line-height:1.5">Pick a <b>Save Name</b> and use it on any device to access your save. Add a PIN so only you can overwrite or load it.</div>
         <div style="display:flex;gap:7px;margin-bottom:7px">
           <div style="flex:2">
-            <label style="font-size:10px;color:var(--txt3);font-family:var(--font-d);letter-spacing:.4px;display:block;margin-bottom:4px">SLOT NAME</label>
-            <input id="cloud-slot-id" placeholder="e.g. hero1, myrun2…" style="width:100%;background:var(--bg1);border:1px solid var(--bord2);border-radius:6px;padding:6px 10px;font-size:12px;color:var(--txt);font-family:var(--font-b);outline:none;transition:border-color .15s;box-sizing:border-box" onfocus="this.style.borderColor='var(--purple2)'" onblur="this.style.borderColor='var(--bord2)'"/>
+            <label style="font-size:10px;color:var(--txt3);font-family:var(--font-d);letter-spacing:.4px;display:block;margin-bottom:4px">SAVE NAME</label>
+            <input id="cloud-save-name" placeholder="e.g. dragonslayer, myrun…" style="width:100%;background:var(--bg1);border:1px solid var(--bord2);border-radius:6px;padding:6px 10px;font-size:12px;color:var(--txt);font-family:var(--font-b);outline:none;transition:border-color .15s;box-sizing:border-box" onfocus="this.style.borderColor='var(--purple2)'" onblur="this.style.borderColor='var(--bord2)'"/>
           </div>
           <div style="flex:1">
             <label style="font-size:10px;color:var(--txt3);font-family:var(--font-d);letter-spacing:.4px;display:block;margin-bottom:4px">PIN <span style="color:var(--txt3);font-style:italic;font-size:9px">(optional)</span></label>
             <input id="cloud-pin" type="password" placeholder="••••" maxlength="20" style="width:100%;background:var(--bg1);border:1px solid var(--bord2);border-radius:6px;padding:6px 10px;font-size:12px;color:var(--txt);font-family:var(--font-b);outline:none;transition:border-color .15s;box-sizing:border-box" onfocus="this.style.borderColor='var(--purple2)'" onblur="this.style.borderColor='var(--bord2)'"/>
           </div>
         </div>
-        <div style="font-size:9.5px;color:var(--txt3);font-family:var(--font-m);margin-bottom:8px;padding:4px 7px;background:var(--bg3);border-radius:5px">🔒 PIN protects your slot from being overwritten or loaded by others. Leave blank for open access.</div>
-        <div style="display:flex;gap:6px;margin-bottom:8px">
-          <button class="btn btn-primary" style="flex:1;font-size:11px;padding:6px 0" onclick="cloudSave()">☁ Save Online</button>
-          <button class="btn btn-gold" style="flex:1;font-size:11px;padding:6px 0" onclick="cloudLoad()">⬇ Load Online</button>
+        <div style="display:flex;gap:6px;margin-bottom:6px">
+          <button class="btn btn-primary" style="flex:1;font-size:11px;padding:6px 0" onclick="cloudSave()">☁ Save to Cloud</button>
+          <button class="btn btn-gold" style="flex:1;font-size:11px;padding:6px 0" onclick="cloudLoad()">⬇ Load from Cloud</button>
+        </div>
+        <div style="margin-bottom:8px">
+          <button class="btn btn-red" style="width:100%;font-size:10px;padding:4px 0;opacity:.8" onclick="cloudDelete()">🗑 Delete Cloud Save</button>
         </div>
         <div id="cloud-status" style="font-size:10.5px;font-family:var(--font-m);min-height:16px;padding:4px 7px;background:var(--bg3);border-radius:5px;color:var(--txt3)"></div>
       </div>
@@ -143,9 +140,14 @@ export default function Home() {
       </div>
     </div>
     <div style="margin-top:12px;padding:10px 14px;background:rgba(40,30,120,.25);border:1px solid var(--purple2);border-radius:9px;text-align:left">
-      <div style="font-size:10px;color:var(--purple3);font-family:var(--font-d);letter-spacing:.5px;margin-bottom:6px">☁ CLOUD SAVES</div>
-      <div id="cloud-slots-list" style="font-size:11px;color:var(--txt3);font-style:italic">Click to browse…</div>
-      <button class="btn" style="font-size:10px;padding:3px 9px;margin-top:6px" onclick="showCloudSlots()">🔍 Browse Cloud Saves</button>
+      <div style="font-size:10px;color:var(--purple3);font-family:var(--font-d);letter-spacing:.5px;margin-bottom:6px">☁ CONTINUE FROM CLOUD</div>
+      <div style="font-size:9.5px;color:var(--txt3);margin-bottom:8px">Enter your Save Name (and PIN if set) to load your game on this device.</div>
+      <div style="display:flex;gap:6px;margin-bottom:6px">
+        <input id="title-cloud-name" placeholder="Save Name…" style="flex:2;background:rgba(0,0,0,.3);border:1px solid var(--purple2);border-radius:6px;padding:5px 9px;font-size:12px;color:var(--txt);font-family:var(--font-b);outline:none;box-sizing:border-box"/>
+        <input id="title-cloud-pin" type="password" placeholder="PIN…" maxlength="20" style="flex:1;background:rgba(0,0,0,.3);border:1px solid var(--purple2);border-radius:6px;padding:5px 9px;font-size:12px;color:var(--txt);font-family:var(--font-b);outline:none;box-sizing:border-box"/>
+      </div>
+      <button class="btn btn-gold" style="width:100%;font-size:11px;padding:5px 0" onclick="cloudLoad('title-cloud-name','title-cloud-pin','title-cloud-status')">⬇ Load Cloud Save</button>
+      <div id="title-cloud-status" style="font-size:10.5px;font-family:var(--font-m);min-height:14px;padding:4px 6px;margin-top:6px;color:var(--txt3)"></div>
     </div>
   </div>
 </div>

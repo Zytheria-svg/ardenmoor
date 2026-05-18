@@ -55,8 +55,6 @@ function setSpeed(s){
 const SK='ardenmoor_v6';
 function saveGame(){if(!G)return;try{localStorage.setItem(SK,JSON.stringify({G,ts:Date.now()}));}catch(e){}}
 function loadGame(){try{const r=localStorage.getItem(SK)||localStorage.getItem('ardenmoor_v5');return r?JSON.parse(r):null;}catch(e){return null;}}
-function exportSave(){if(!G){alert('No game to export.');return;}const s=localStorage.getItem(SK)||'';const a=document.createElement('a');a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(s);a.download='hexo_idle_save.json';a.click();}
-function importSavePrompt(){const txt=prompt('Paste your save data here:');if(!txt)return;try{const p=JSON.parse(txt);if(!p.G)throw 0;localStorage.setItem(SK,txt);location.reload();}catch(e){alert('Invalid save data.');}}
 let _aSaveT=null;
 function queueSave(){clearTimeout(_aSaveT);_aSaveT=setTimeout(saveGame,1500);}
 window.addEventListener('beforeunload',()=>{if(G)saveGame();});
@@ -64,7 +62,7 @@ window.addEventListener('beforeunload',()=>{if(G)saveGame();});
 // ═══════════════════════════════════════
 // CLOUD SAVE / LOAD — Supabase backend
 // ═══════════════════════════════════════
-let _sb = null;
+let _sb=null;
 function getSB(){
   if(!_sb){
     const url=window.__SB_URL,key=window.__SB_KEY;
@@ -74,124 +72,80 @@ function getSB(){
   return _sb;
 }
 
-function getDeviceId(){
-  let id=localStorage.getItem('ardenmoor_uid');
-  if(!id){id='u'+Math.random().toString(36).slice(2,10);localStorage.setItem('ardenmoor_uid',id);}
-  return id;
+function getCloudSaveName(inputId){
+  const el=document.getElementById(inputId||'cloud-save-name');
+  return (el?.value||'').trim().replace(/[^a-zA-Z0-9_\-]/g,'').slice(0,32);
 }
-function getCloudSlotName(){
-  const uid=getDeviceId();
-  const v=(document.getElementById('cloud-slot-id')||{}).value||'';
-  const name=v.trim().replace(/[^a-zA-Z0-9_\-]/g,'').slice(0,32)||'default';
-  return uid+'_'+name;
-}
-function getCloudDisplaySlot(slotName){
-  const uid=getDeviceId();
-  return slotName.startsWith(uid+'_')?slotName.slice(uid.length+1):slotName;
-}
-function getCloudPin(){
-  const el=document.getElementById('cloud-pin');
+function getCloudPin(inputId){
+  const el=document.getElementById(inputId||'cloud-pin');
   return el&&el.value.trim()?el.value.trim():undefined;
 }
-function setCloudStatus(msg,ok){
-  const el=document.getElementById('cloud-status');
+function setCloudStatus(msg,ok,elId){
+  const el=document.getElementById(elId||'cloud-status');
   if(el){el.textContent=msg;el.style.color=ok===true?'var(--green3)':ok===false?'var(--red3)':'var(--txt3)';}
-}
-async function _promptPin(slotName){
-  return new Promise(resolve=>{
-    const pin=window.prompt('🔒 Slot "'+slotName+'" is PIN-protected.\nEnter PIN to continue:','');
-    resolve(pin&&pin.trim()?pin.trim():undefined);
-  });
 }
 
 async function cloudSave(){
   if(!G){push('No game to save!');return;}
   const sb=getSB();if(!sb){push('☁️ Supabase not configured','bad');return;}
-  const slot=getCloudSlotName();
+  const name=getCloudSaveName();
+  if(!name){setCloudStatus('✗ Enter a save name first.',false);return;}
   const pin=getCloudPin();
-  setCloudStatus('⏳ Saving to cloud…',null);
+  setCloudStatus('⏳ Saving…',null);
   try{
-    const{data:existing}=await sb.from('cloud_saves').select('pin,protected').eq('slot_name',slot).maybeSingle();
-    if(existing&&existing.protected&&existing.pin!==pin){
-      if(!pin){const entered=await _promptPin(slot);if(!entered){setCloudStatus('✗ PIN required',false);return;}
-        return cloudSave();}
-      setCloudStatus('✗ Wrong PIN for slot "'+slot+'"',false);push('🔒 Wrong PIN — cloud save blocked','bad');return;
+    const{data:existing}=await sb.from('cloud_saves').select('pin,protected').eq('slot_name',name).maybeSingle();
+    if(existing&&existing.protected){
+      const enteredPin=pin||(window.prompt('🔒 "'+name+'" is PIN-protected. Enter PIN to overwrite:')||'').trim()||undefined;
+      if(!enteredPin){setCloudStatus('✗ PIN required to overwrite.',false);return;}
+      if(existing.pin!==enteredPin){setCloudStatus('✗ Wrong PIN.',false);return;}
     }
-    const row={slot_name:slot,char_name:G.charName||'Hero',level:G.level||1,cls:G.cls||'rogue',
+    const row={slot_name:name,char_name:G.charName||'Hero',level:G.level||1,cls:G.cls||'rogue',
       save_data:G,protected:!!pin,pin:pin||null,updated_at:new Date().toISOString()};
     const{error}=await sb.from('cloud_saves').upsert(row,{onConflict:'slot_name'});
     if(error)throw error;
-    setCloudStatus('✓ '+(pin?'🔒 ':'')+'Saved to cloud slot: '+slot,true);
-    push('☁️ Cloud saved to "'+slot+'"'+(pin?' 🔒':''),'info');
-  }catch(e){setCloudStatus('✗ Cloud save failed: '+e.message,false);push('☁️ Save failed: '+e.message,'bad');}
+    setCloudStatus('✓ '+(pin?'🔒 ':'')+'Saved as "'+name+'"',true);
+    push('☁️ Cloud saved as "'+name+'"'+(pin?' 🔒':''),'info');
+  }catch(e){setCloudStatus('✗ Save failed: '+e.message,false);}
 }
 
-async function cloudLoad(){
+async function cloudLoad(nameInputId,pinInputId,statusId){
   const sb=getSB();if(!sb){push('☁️ Supabase not configured','bad');return;}
-  const slot=getCloudSlotName();
-  let pin=getCloudPin();
-  setCloudStatus('⏳ Loading from cloud…',null);
+  const name=getCloudSaveName(nameInputId);
+  if(!name){setCloudStatus('✗ Enter a save name.',false,statusId);return;}
+  const pin=getCloudPin(pinInputId);
+  setCloudStatus('⏳ Loading…',null,statusId);
   try{
-    const{data,error}=await sb.from('cloud_saves').select('*').eq('slot_name',slot).maybeSingle();
-    if(error||!data){setCloudStatus('✗ No cloud save found for slot: '+slot,false);return;}
+    const{data,error}=await sb.from('cloud_saves').select('*').eq('slot_name',name).maybeSingle();
+    if(error)throw error;
+    if(!data){setCloudStatus('✗ No save found for "'+name+'".',false,statusId);return;}
     if(data.protected){
-      if(!pin){pin=await _promptPin(slot);if(!pin){setCloudStatus('✗ PIN required',false);return;}}
-      if(data.pin!==pin){setCloudStatus('✗ Wrong PIN for slot "'+slot+'"',false);return;}
+      const enteredPin=pin||(window.prompt('🔒 "'+name+'" is PIN-protected. Enter PIN:')||'').trim()||undefined;
+      if(!enteredPin){setCloudStatus('✗ PIN required.',false,statusId);return;}
+      if(data.pin!==enteredPin){setCloudStatus('✗ Wrong PIN.',false,statusId);return;}
     }
-    const gData=data.save_data;
-    if(!gData)throw new Error('Empty save data');
-    localStorage.setItem(SK,JSON.stringify({G:gData,ts:Date.now()}));
-    setCloudStatus('✓ Loaded from cloud! Restarting…',true);
-    push('☁️ Slot "'+slot+'" loaded!','info');
+    if(!data.save_data)throw new Error('Empty save data');
+    localStorage.setItem(SK,JSON.stringify({G:data.save_data,ts:Date.now()}));
+    setCloudStatus('✓ Loaded "'+name+'"! Restarting…',true,statusId);
     setTimeout(()=>location.reload(),800);
-  }catch(e){setCloudStatus('✗ Cloud load failed: '+e.message,false);}
+  }catch(e){setCloudStatus('✗ Load failed: '+e.message,false,statusId);}
 }
 
-async function showCloudSlots(){
-  const sb=getSB();
-  const el=document.getElementById('cloud-slots-list');if(!el)return;
-  if(!sb){el.textContent='⚠️ Supabase not configured.';return;}
-  el.textContent='⏳ Loading…';
+async function cloudDelete(){
+  const sb=getSB();if(!sb){return;}
+  const name=getCloudSaveName();
+  if(!name){setCloudStatus('✗ Enter a save name to delete.',false);return;}
+  if(!confirm('Delete cloud save "'+name+'"? This cannot be undone.'))return;
+  const pin=getCloudPin();
   try{
-    const uid=getDeviceId();
-    const{data:slots,error}=await sb.from('cloud_saves').select('slot_name,char_name,level,cls,protected,updated_at').like('slot_name',uid+'_%').order('updated_at',{ascending:false});
-    if(error)throw error;
-    if(!slots||!slots.length){el.textContent='No cloud saves found.';return;}
-    el.innerHTML='';
-    slots.forEach(s=>{
-      const clsIcon={rogue:'🗡',mage:'🔮',paladin:'🛡',archer:'🏹'}[s.cls]||'⚔';
-      const lockIcon=s.protected?'🔒 ':'';
-      const when=new Date(s.updated_at).toLocaleDateString();
-      const displayName=getCloudDisplaySlot(s.slot_name);
-      const btn=document.createElement('button');
-      btn.className='btn btn-gold';btn.style.cssText='font-size:11px;padding:4px 10px;margin:3px';
-      btn.textContent=clsIcon+' '+lockIcon+'Load: '+displayName+' — '+s.char_name+' LV'+s.level+' ('+when+')';
-      btn.onclick=async()=>{
-        let pin=s.protected?await _promptPin(s.slot_name):undefined;
-        if(s.protected&&!pin)return;
-        const{data,error}=await sb.from('cloud_saves').select('*').eq('slot_name',s.slot_name).single();
-        if(error||!data){push('Failed to load cloud slot','bad');return;}
-        if(data.protected&&data.pin!==pin){push('🔒 Wrong PIN for slot "'+s.slot_name+'"','bad');return;}
-        localStorage.setItem(SK,JSON.stringify({G:data.save_data,ts:Date.now()}));
-        push('☁️ Slot "'+s.slot_name+'" loaded! Restarting…','info');
-        setTimeout(()=>location.reload(),800);
-      };
-      const del=document.createElement('button');
-      del.className='btn btn-red';del.style.cssText='font-size:10px;padding:3px 7px;margin:3px';
-      del.textContent='✕';del.title='Delete cloud slot';
-      del.onclick=async()=>{
-        let pin=s.protected?await _promptPin(s.slot_name):undefined;
-        if(s.protected&&!pin)return;
-        if(s.protected){
-          const{data:row}=await sb.from('cloud_saves').select('pin').eq('slot_name',s.slot_name).single();
-          if(row&&row.pin!==pin){push('🔒 Wrong PIN — cannot delete slot','bad');return;}
-        }
-        await sb.from('cloud_saves').delete().eq('slot_name',s.slot_name);
-        showCloudSlots();
-      };
-      el.appendChild(btn);el.appendChild(del);
-    });
-  }catch(e){el.textContent='✗ Could not reach cloud server.';}
+    const{data:row}=await sb.from('cloud_saves').select('pin,protected').eq('slot_name',name).maybeSingle();
+    if(!row){setCloudStatus('✗ No save found for "'+name+'".',false);return;}
+    if(row.protected){
+      const enteredPin=pin||(window.prompt('🔒 Enter PIN to delete "'+name+'":')||'').trim()||undefined;
+      if(!enteredPin||row.pin!==enteredPin){setCloudStatus('✗ Wrong PIN — delete blocked.',false);return;}
+    }
+    await sb.from('cloud_saves').delete().eq('slot_name',name);
+    setCloudStatus('✓ Deleted "'+name+'".',true);
+  }catch(e){setCloudStatus('✗ Delete failed: '+e.message,false);}
 }
 
 // ═══════════════════════════════════════

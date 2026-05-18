@@ -110,21 +110,23 @@ export default function Home() {
     <div id="patch-notes-box" style="display:none;margin-top:10px;padding:12px 14px;background:rgba(20,14,40,.7);border:1px solid var(--gold2);border-radius:10px;text-align:left;max-width:420px;margin-left:auto;margin-right:auto">
       <div style="font-family:var(--font-d);font-size:13px;color:var(--gold2);letter-spacing:.8px;margin-bottom:10px">📋 PATCH NOTES — v13.0</div>
       <div style="font-size:10.5px;color:var(--txt2);font-family:var(--font-m);line-height:1.75;display:flex;flex-direction:column;gap:6px">
-        <div><span style="color:var(--gold3);font-family:var(--font-d)">🎮 HEXO IDLE</span><br/>The game has been renamed to Hexo Idle. New identity, same adventure.</div>
+        <div><span style="color:var(--gold3);font-family:var(--font-d)">🎮 HEXO IDLE</span><br/>Game renamed to Hexo Idle.</div>
         <div style="height:1px;background:var(--bord3)"></div>
-        <div><span style="color:var(--purple3);font-family:var(--font-d)">🗺 10 DUNGEONS</span><br/>Expanded from 6 to 10 dungeons. Four new zones added: 🌋 Ashen Wastes (Lv26) · 💎 Crystal Catacombs (Lv31) · 🌑 Shadow Citadel (Lv36) · 🕳 Abyssal Maw (Lv41). All unlock levels rebalanced to +5 per tier.</div>
+        <div><span style="color:var(--purple3);font-family:var(--font-d)">🗺 10 DUNGEONS</span><br/>4 new dungeons added. All unlock levels rebalanced.</div>
         <div style="height:1px;background:var(--bord3)"></div>
-        <div><span style="color:var(--amber3);font-family:var(--font-d)">🎨 DUNGEON BACKGROUNDS</span><br/>Each dungeon now has its own atmospheric background, previewed when selected. New hand-crafted hero sprites for all 4 classes with transparent backgrounds.</div>
+        <div><span style="color:var(--amber3);font-family:var(--font-d)">🎨 VISUALS</span><br/>New dungeon backgrounds and hand-crafted hero sprites.</div>
         <div style="height:1px;background:var(--bord3)"></div>
-        <div><span style="color:var(--teal3);font-family:var(--font-d)">⭐ XP DRAUGHT POTION</span><br/>New shop potion — doubles all XP gained for 10 turns. Price: 1,000g.</div>
+        <div><span style="color:var(--teal3);font-family:var(--font-d)">⭐ XP DRAUGHT</span><br/>New potion in the shop — doubles XP for 10 turns.</div>
         <div style="height:1px;background:var(--bord3)"></div>
-        <div><span style="color:var(--blue3);font-family:var(--font-d)">🗄 VAULT EXPANDED</span><br/>Vault storage increased from 80 → 100 slots.</div>
+        <div><span style="color:var(--blue3);font-family:var(--font-d)">🗄 VAULT</span><br/>Storage expanded to 100 slots.</div>
         <div style="height:1px;background:var(--bord3)"></div>
-        <div><span style="color:var(--green3);font-family:var(--font-d)">🎉 LEVEL 50</span><br/>Reaching level 50 now triggers a special congratulations message.</div>
+        <div><span style="color:var(--green3);font-family:var(--font-d)">🎉 LEVEL 50</span><br/>Completing a run now shows a special message.</div>
         <div style="height:1px;background:var(--bord3)"></div>
-        <div><span style="color:var(--red3);font-family:var(--font-d)">⚖ XP REWORK</span><br/>Flat 250,000 XP per level. Enemies now give fixed XP: Normal 2,000 · Elite 4,000 · Boss 12,000. Previous dungeons give 10× less XP each time a new dungeon is unlocked.</div>
+        <div><span style="color:var(--red3);font-family:var(--font-d)">⚖ BALANCE</span><br/>XP requirements reduced. Enemy XP standardized. Prestige costs gold.</div>
         <div style="height:1px;background:var(--bord3)"></div>
-        <div><span style="color:var(--gold2);font-family:var(--font-d)">⭐ PRESTIGE COST</span><br/>Prestige now costs 10,000g per reset.</div>
+        <div><span style="color:var(--purple3);font-family:var(--font-d)">☁ CLOUD SYNC</span><br/>Saves sync automatically to the cloud across devices.</div>
+        <div style="height:1px;background:var(--bord3)"></div>
+        <div><span style="color:var(--txt3);font-family:var(--font-d)">🔧 BUG FIXES</span><br/>Various combat and progression fixes.</div>
       </div>
     </div>
     <div style="margin-top:12px;padding:10px 14px;background:rgba(40,30,120,.25);border:1px solid var(--purple2);border-radius:9px;text-align:left">

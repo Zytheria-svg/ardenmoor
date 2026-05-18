@@ -269,8 +269,7 @@ export default function Home() {
   </div>
   <!-- DUNGEON MAP -->
   <div style="margin-top:9px">
-    <div style="font-family:var(--font-d);font-size:9px;color:var(--txt3);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px">🗺 Select Dungeon</div>
-    <div id="dng-list" style="position:relative;width:100%;height:600px;border-radius:10px;border:1px solid var(--bord2);overflow:hidden;background:#07090f">
+    <div id="dng-list" style="position:relative;width:100%;height:460px;border-radius:10px;border:1px solid var(--bord2);overflow:hidden;background:#07090f">
       <div style="position:absolute;inset:0;z-index:0;background:url('/world-map.png') center/cover no-repeat"></div>
       <svg id="dng-map-svg" width="100%" height="100%" style="position:absolute;inset:0;z-index:1"></svg>
       <div id="dng-map-nodes" style="position:absolute;inset:0;z-index:2"></div>

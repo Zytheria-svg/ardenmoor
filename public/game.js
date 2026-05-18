@@ -983,15 +983,22 @@ function setEnemyVisual(en){
   updateEnemyBars();
 }
 
-// Dungeon node positions on the world map [x%, y%]
-const DNG_POS=[
-  [14,84],[42,90],[72,82],  // D1 D2 D3
-  [88,65],[78,45],[52,50],  // D4 D5 D6
-  [22,52],[12,30],[46,22],  // D7 D8 D9
-  [78,12]                   // D10
+// Clickable region bounds on world-map.png [x1%,y1%,x2%,y2%]
+// Top row: D1-D4 · Bottom row: D5-D10
+const DNG_BOUNDS=[
+  [0,10,25,52],  // 1 Goblin Warrens
+  [25,10,45,52], // 2 Crypt of Whispers
+  [45,10,65,52], // 3 Fungal Depths
+  [65,10,100,52],// 4 Infernal Citadel
+  [0,52,18,95],  // 5 Sunken Necropolis
+  [18,52,33,95], // 6 Ashen Wastes
+  [33,52,50,95], // 7 Crystal Catacombs
+  [50,52,67,95], // 8 Shadow Citadel
+  [67,52,83,95], // 9 Abyssal Maw
+  [83,52,100,95] // 10 Void Sanctum
 ];
 
-// Terrain color per dungeon for map region glow
+// Glow color per dungeon
 const DNG_TERRAIN=[
   '#1f6830','#5245c2','#8c5c08','#b02828',
   '#164488','#8c3a08','#2080a0','#3a2060',
@@ -1013,41 +1020,36 @@ function renderDungeonList(){
   nodesDiv.appendChild(tooltip);
 
   DUNGEONS.forEach((d,i)=>{
-    const [xp,yp]=DNG_POS[i];
+    const [x1,y1,x2,y2]=DNG_BOUNDS[i];
     const locked=G.level<d.minLvl;
     const sel=G.activeDungeon===i;
     const runs=(G.dungeonRuns||[])[i]||0;
     const col=DNG_TERRAIN[i];
+    const cx=((x1+x2)/2); // center x for tooltip anchor
 
-    // Nameplate
-    const plate=document.createElement('div');
-    plate.style.cssText=`position:absolute;left:${xp}%;top:${yp}%;transform:translate(-50%,-50%);
-      cursor:${locked?'default':'pointer'};z-index:3;user-select:none;transition:transform .15s`;
+    // Invisible clickable zone over the dungeon artwork
+    const zone=document.createElement('div');
+    zone.style.cssText=`position:absolute;left:${x1}%;top:${y1}%;
+      width:${x2-x1}%;height:${y2-y1}%;
+      cursor:${locked?'default':'pointer'};z-index:3;
+      box-sizing:border-box;transition:box-shadow .15s;
+      ${sel?`box-shadow:inset 0 0 0 2px ${col},inset 0 0 24px ${col}44`:''}`;
 
-    const inner=document.createElement('div');
-    inner.style.cssText=`display:flex;align-items:center;gap:5px;
-      padding:4px 9px;border-radius:4px;
-      background:${sel?col+'33':locked?'rgba(0,0,0,.55)':'rgba(0,0,0,.65)'};
-      border:1px solid ${sel?col:locked?'#222':'#333'};
-      box-shadow:${sel?'0 0 10px '+col+'66':'0 2px 6px rgba(0,0,0,.6)'};
-      opacity:${locked?0.45:1};transition:all .18s;white-space:nowrap`;
-
-    inner.innerHTML=`<span style="font-size:13px">${locked?'🔒':d.em}</span>
-      <span style="font-size:9px;font-family:var(--font-d);letter-spacing:.4px;
-        color:${sel?col:locked?'#444':'#aaa'};text-shadow:0 1px 4px #000">
-        ${locked?'Lv '+d.minLvl:d.n}
-      </span>
-      ${sel?`<span style="font-size:7px;color:${col};font-family:var(--font-d)">●</span>`:''}`;
-
-    plate.appendChild(inner);
+    // Locked overlay
+    if(locked){
+      const lk=document.createElement('div');
+      lk.style.cssText=`position:absolute;inset:0;background:rgba(0,0,0,.55);
+        display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+        padding-bottom:8px;pointer-events:none`;
+      lk.innerHTML=`<span style="font-size:18px">🔒</span>
+        <span style="font-size:8px;color:#aaa;font-family:var(--font-d)">Lv ${d.minLvl}</span>`;
+      zone.appendChild(lk);
+    }
 
     if(!locked){
-      plate.onmouseenter=(e)=>{
-        inner.style.background=col+'44';
-        inner.style.borderColor=col;
-        inner.style.boxShadow='0 0 10px '+col+'77';
-        plate.style.transform='translate(-50%,-50%) scale(1.08)';
-        // Position tooltip
+      zone.onmouseenter=()=>{
+        zone.style.boxShadow=`inset 0 0 0 2px ${col},inset 0 0 30px ${col}55`;
+        // Build tooltip content
         const er=[0.15,0.20,0.27,0.35,0.44,0.55,0.62,0.69,0.76,0.83][i]||0.15;
         const br=[0.30,0.38,0.48,0.58,0.70,0.85,0.92,0.98,1.05,1.12][i]||0.30;
         const rr=[0.08,0.10,0.13,0.16,0.20,0.25,0.28,0.31,0.34,0.38][i]||0.08;
@@ -1071,27 +1073,22 @@ function renderDungeonList(){
             <span>Rewards: <b style="color:var(--green3)">${Math.round((1+runs*rr)*100)}%</b></span>
           </div>
           <div style="margin-top:6px;font-size:9px;color:var(--txt3);border-top:1px solid #222;padding-top:5px">Boss: <b style="color:var(--txt)">${d.boss.n}</b></div>`;
-        // Smart tooltip positioning — flip if too close to edge
-        const rect=nodesDiv.getBoundingClientRect();
-        const plateRect=plate.getBoundingClientRect();
-        const tipLeft=xp>60?'auto':'calc('+xp+'% + 30px)';
-        const tipRight=xp>60?'calc('+(100-xp)+'% + 30px)':'auto';
-        const tipTop=yp>70?'auto':'calc('+yp+'% + 18px)';
-        const tipBottom=yp>70?'calc('+(100-yp)+'% + 18px)':'auto';
+        // Smart tooltip positioning
+        const tipLeft=cx>60?'auto':x1+'%';
+        const tipRight=cx>60?(100-x2)+'%':'auto';
+        const tipTop=y1<55?(y1+5)+'%':'auto';
+        const tipBottom=y1>=55?(100-y1+5)+'%':'auto';
         tooltip.style.left=tipLeft;tooltip.style.right=tipRight;
         tooltip.style.top=tipTop;tooltip.style.bottom=tipBottom;
         tooltip.style.display='block';
       };
-      plate.onmouseleave=()=>{
-        inner.style.background=sel?col+'33':'rgba(0,0,0,.65)';
-        inner.style.borderColor=sel?col:'#333';
-        inner.style.boxShadow=sel?'0 0 10px '+col+'66':'0 2px 6px rgba(0,0,0,.6)';
-        plate.style.transform='translate(-50%,-50%) scale(1)';
+      zone.onmouseleave=()=>{
+        zone.style.boxShadow=sel?`inset 0 0 0 2px ${col},inset 0 0 24px ${col}44`:'';
         tooltip.style.display='none';
       };
-      plate.onclick=()=>selectDungeonNode(i);
+      zone.onclick=()=>selectDungeonNode(i);
     }
-    nodesDiv.appendChild(plate);
+    nodesDiv.appendChild(zone);
   });
 }
 

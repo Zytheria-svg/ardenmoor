@@ -472,7 +472,7 @@ function heroSVG(cls,w,h){
   const src=HERO_IMGS[cls]||HERO_IMGS.rogue;
   // Archer sprite is landscape so use cover to fill the portrait frame
   const fit=cls==='archer'?'cover':'contain';
-  const pos=cls==='archer'?'20% center':'bottom center';
+  const pos=cls==='archer'?'center 65%':'bottom center';
   return `<img src="${src}" width="${w}" height="${h}" style="object-fit:${fit};object-position:${pos};image-rendering:auto;filter:drop-shadow(0 2px 8px rgba(0,0,0,.8))" />`;
 }
 

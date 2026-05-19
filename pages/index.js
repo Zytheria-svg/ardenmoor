@@ -190,7 +190,7 @@ export default function Home() {
 <div>
   <div class="card" style="margin-bottom:9px">
     <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:8px">
-      <div id="b-hero-svg" style="width:46px;height:54px;flex-shrink:0"></div>
+      <div id="b-hero-svg" style="width:46px;height:80px;flex-shrink:0"></div>
       <div style="flex:1">
         <div style="font-weight:700;font-size:13px;color:var(--gold2);font-family:var(--font-d);margin-bottom:5px" id="b-hero-name">—</div>
         <div style="font-size:9.5px;color:var(--txt3);margin-bottom:2px">HP <span id="b-hp-txt" style="color:var(--red3);font-family:var(--font-m)">—</span></div>

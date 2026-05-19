@@ -969,7 +969,7 @@ function updateHeroVisuals(){
   if(!G)return;
   const s=heroSVG(G.cls,110,180);
   const big=document.getElementById('hero-svg-big');if(big)big.outerHTML=s.replace('<svg ','<svg id="hero-svg-big" ');
-  const mini=document.getElementById('b-hero-svg');if(mini)mini.innerHTML=heroSVG(G.cls,46,54);
+  const mini=document.getElementById('b-hero-svg');if(mini)mini.innerHTML=heroSVG(G.cls,46,80);
   const top=document.getElementById('hero-top-svg');if(top)top.innerHTML=heroSVG(G.cls,26,26);
   const port=document.getElementById('sheet-portrait');if(port)port.innerHTML=heroSVG(G.cls,70,78);
 }

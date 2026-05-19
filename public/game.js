@@ -470,7 +470,10 @@ function heroSVG(cls,w,h){
     archer:'/hero-archer.png'
   };
   const src=HERO_IMGS[cls]||HERO_IMGS.rogue;
-  return `<img src="${src}" width="${w}" height="${h}" style="object-fit:contain;object-position:bottom center;image-rendering:auto;filter:drop-shadow(0 2px 8px rgba(0,0,0,.8))" />`;
+  // Archer sprite is landscape so use cover to fill the portrait frame
+  const fit=cls==='archer'?'cover':'contain';
+  const pos=cls==='archer'?'center center':'bottom center';
+  return `<img src="${src}" width="${w}" height="${h}" style="object-fit:${fit};object-position:${pos};image-rendering:auto;filter:drop-shadow(0 2px 8px rgba(0,0,0,.8))" />`;
 }
 
 function enemySVG(name,w,h){
